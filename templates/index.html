@@ -5,14 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{{ s.get('name','Harshil Sandip Khandhar') }} – Portfolio</title>
   <meta name="description" content="{{ s.get('bio','Professional Portfolio') }}"/>
-  <meta name="keywords" content="portfolio, developer, AI, web development, Harshil Khandhar"/>
-  <meta property="og:title" content="{{ s.get('name','Harshil Sandip Khandhar') }}"/>
+  <meta name="keywords" content="portfolio, developer, AI, web development, {{ s.get('name','') }}"/>
+  <meta property="og:title" content="{{ s.get('name','') }}"/>
   <meta property="og:description" content="{{ s.get('bio','') }}"/>
-  <meta name="theme-color" content="#0a2540"/>
+  <meta name="theme-color" content="{{ s.get('primary_color','#0a2540') }}"/>
   <link rel="manifest" href="/static/manifest.json"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/static/css/main.css"/>
+  <!-- Custom head HTML injected by admin -->
+  {% if s.get('custom_html_head') %}{{ s.custom_html_head | safe }}{% endif %}
   <style>
+    :root {
+      --primary: {{ s.get('primary_color','#0a2540') }};
+      --secondary: {{ s.get('secondary_color','#1a73e8') }};
+      --accent: {{ s.get('accent_color','#00d4ff') }};
+    }
     .nav-links a.active-nav { color: var(--accent); }
     .nav-links a.active-nav::after { width: 100%; }
   </style>
@@ -21,13 +28,13 @@
 
 <!-- ── Loading Screen ── -->
 <div id="loading-screen">
-  <div class="loader-name">HSK</div>
+  <div class="loader-name">{{ s.get('name','HSK').split()[0][0] }}{{ s.get('name','HSK').split()[1][0] if s.get('name','').split()|length > 1 else '' }}{{ s.get('name','HSK').split()[2][0] if s.get('name','').split()|length > 2 else '' }}</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
 
 <!-- ── Navigation ── -->
 <nav id="main-nav">
-  <a href="#hero" class="nav-logo">H<span>.</span>Khandhar</a>
+  <a href="#hero" class="nav-logo">{{ s.get('name','H').split()[0][0] }}<span>.</span>{{ s.get('name','Khandhar').split()[-1] }}</a>
   <div class="nav-links">
     {% if s.get('section_about','1')=='1' %}<a href="#about" class="nav-link">About</a>{% endif %}
     {% if s.get('section_skills','1')=='1' %}<a href="#skills" class="nav-link">Skills</a>{% endif %}
@@ -39,9 +46,7 @@
   </div>
   <div class="nav-actions">
     <button id="theme-toggle" class="btn-theme-toggle" title="Toggle theme">🌙</button>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="mobile-menu" id="mobile-menu">
@@ -54,9 +59,7 @@
   {% if s.get('section_contact','1')=='1' %}<a href="#contact" class="mobile-link">Contact</a>{% endif %}
 </div>
 
-<!-- ══════════════════════════════════════
-     HERO
-═══════════════════════════════════════ -->
+<!-- ══ HERO ══ -->
 <section id="hero">
   <div class="hero-bg-pattern"></div>
   <div class="hero-grid"></div>
@@ -67,49 +70,26 @@
         {{ s.get('name','Harshil Sandip Khandhar').split()[0] }}<br>
         <span class="accent">{{ ' '.join(s.get('name','Harshil Sandip Khandhar').split()[1:]) }}</span>
       </h1>
-      <div class="hero-typing">
-        I'm a <span id="typed-text"></span><span class="cursor"></span>
-      </div>
-      <p class="hero-desc">{{ s.get('bio','Passionate developer crafting innovative digital experiences.') }}</p>
+      <div class="hero-typing">I'm a <span id="typed-text"></span><span class="cursor"></span></div>
+      <p class="hero-desc">{{ s.get('bio','') }}</p>
       <div class="hero-actions">
         {% if s.get('section_contact','1')=='1' %}
-        <a href="#contact" class="btn-primary">
-          <i class="fas fa-paper-plane"></i> Contact Me
-        </a>
+        <a href="#contact" class="btn-primary"><i class="fas fa-paper-plane"></i> Contact Me</a>
         {% endif %}
         {% if resume %}
-        <a href="/api/resume/download" class="btn-outline">
-          <i class="fas fa-download"></i> Download CV
-        </a>
+        <a href="/api/resume/download" class="btn-outline"><i class="fas fa-download"></i> Download CV</a>
         {% endif %}
       </div>
       <div class="hero-socials">
-        {% if s.get('github') %}
-        <a href="{{ s.github }}" class="social-icon" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
-        {% endif %}
-        {% if s.get('linkedin') %}
-        <a href="{{ s.linkedin }}" class="social-icon" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        {% endif %}
-        {% if s.get('twitter') %}
-        <a href="{{ s.twitter }}" class="social-icon" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
-        {% endif %}
-        {% if s.get('instagram') %}
-        <a href="{{ s.instagram }}" class="social-icon" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-        {% endif %}
+        {% if s.get('github') %}<a href="{{ s.github }}" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>{% endif %}
+        {% if s.get('linkedin') %}<a href="{{ s.linkedin }}" class="social-icon" target="_blank"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+        {% if s.get('twitter') %}<a href="{{ s.twitter }}" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>{% endif %}
+        {% if s.get('instagram') %}<a href="{{ s.instagram }}" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>{% endif %}
       </div>
       <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num" data-target="{{ s.get('years_experience','3') }}" data-suffix="+">0+</div>
-          <div class="stat-label">Years Exp.</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num" data-target="{{ s.get('projects_completed','25') }}" data-suffix="+">0+</div>
-          <div class="stat-label">Projects</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num" data-target="{{ s.get('clients_served','15') }}" data-suffix="+">0+</div>
-          <div class="stat-label">Clients</div>
-        </div>
+        <div class="stat-item"><div class="stat-num" data-target="{{ s.get('years_experience','3') }}" data-suffix="+">0+</div><div class="stat-label">Years Exp.</div></div>
+        <div class="stat-item"><div class="stat-num" data-target="{{ s.get('projects_completed','25') }}" data-suffix="+">0+</div><div class="stat-label">Projects</div></div>
+        <div class="stat-item"><div class="stat-num" data-target="{{ s.get('clients_served','15') }}" data-suffix="+">0+</div><div class="stat-label">Clients</div></div>
       </div>
     </div>
     <div class="hero-image-wrap">
@@ -132,79 +112,42 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════
-     ABOUT
-═══════════════════════════════════════ -->
+<!-- ══ ABOUT ══ -->
 {% if s.get('section_about','1')=='1' %}
 <section id="about">
   <div class="about-grid">
     <div class="about-photo-wrap reveal-left">
-      {% if s.get('profile_photo') %}
-      <img src="/static/{{ s.profile_photo }}" alt="{{ s.get('name','') }}" class="about-photo"/>
-      {% else %}
-      <div class="about-photo-placeholder"><i class="fas fa-user"></i></div>
-      {% endif %}
-      <div class="about-badge">
-        <div class="about-badge-num">{{ s.get('years_experience','3') }}+</div>
-        <div class="about-badge-label">Years of Experience</div>
-      </div>
+      {% if s.get('profile_photo') %}<img src="/static/{{ s.profile_photo }}" alt="{{ s.get('name','') }}" class="about-photo"/>
+      {% else %}<div class="about-photo-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+      <div class="about-badge"><div class="about-badge-num">{{ s.get('years_experience','3') }}+</div><div class="about-badge-label">Years of Experience</div></div>
     </div>
     <div class="about-content reveal-right">
-      <div class="section-header" style="text-align:left; margin-bottom:32px;">
+      <div class="section-header" style="text-align:left;margin-bottom:32px">
         <div class="section-tag">About Me</div>
         <h2 class="section-title">Crafting Digital Experiences<br>with Passion</h2>
       </div>
       <p class="about-text">{{ s.get('about_text', s.get('bio','')) }}</p>
       <div class="about-info-grid">
-        <div class="about-info-item">
-          <span class="about-info-label">Name</span>
-          <span class="about-info-value">{{ s.get('name','Harshil Sandip Khandhar') }}</span>
-        </div>
-        <div class="about-info-item">
-          <span class="about-info-label">Email</span>
-          <span class="about-info-value">{{ s.get('email','') }}</span>
-        </div>
-        <div class="about-info-item">
-          <span class="about-info-label">Phone</span>
-          <span class="about-info-value">{{ s.get('phone','') }}</span>
-        </div>
-        <div class="about-info-item">
-          <span class="about-info-label">Location</span>
-          <span class="about-info-value">{{ s.get('location','') }}</span>
-        </div>
+        <div class="about-info-item"><span class="about-info-label">Name</span><span class="about-info-value">{{ s.get('name','') }}</span></div>
+        <div class="about-info-item"><span class="about-info-label">Email</span><span class="about-info-value">{{ s.get('email','') }}</span></div>
+        <div class="about-info-item"><span class="about-info-label">Phone</span><span class="about-info-value">{{ s.get('phone','') }}</span></div>
+        <div class="about-info-item"><span class="about-info-label">Location</span><span class="about-info-value">{{ s.get('location','') }}</span></div>
       </div>
       <div class="about-counters">
-        <div class="counter-item">
-          <div class="counter-num" data-target="{{ s.get('years_experience','3') }}" data-suffix="+">0</div>
-          <div class="counter-label">Years Experience</div>
-        </div>
-        <div class="counter-item">
-          <div class="counter-num" data-target="{{ s.get('projects_completed','25') }}" data-suffix="+">0</div>
-          <div class="counter-label">Projects Done</div>
-        </div>
-        <div class="counter-item">
-          <div class="counter-num" data-target="{{ s.get('clients_served','15') }}" data-suffix="+">0</div>
-          <div class="counter-label">Happy Clients</div>
-        </div>
+        <div class="counter-item"><div class="counter-num" data-target="{{ s.get('years_experience','3') }}" data-suffix="+">0</div><div class="counter-label">Years Experience</div></div>
+        <div class="counter-item"><div class="counter-num" data-target="{{ s.get('projects_completed','25') }}" data-suffix="+">0</div><div class="counter-label">Projects Done</div></div>
+        <div class="counter-item"><div class="counter-num" data-target="{{ s.get('clients_served','15') }}" data-suffix="+">0</div><div class="counter-label">Happy Clients</div></div>
       </div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        {% if s.get('section_contact','1')=='1' %}
-        <a href="#contact" class="btn-primary"><i class="fas fa-paper-plane"></i> Contact Me</a>
-        {% endif %}
-        {% if resume %}
-        <a href="/api/resume/download" class="btn-outline" style="color:var(--text);border-color:var(--border);">
-          <i class="fas fa-file-alt"></i> Download CV
-        </a>
-        {% endif %}
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        {% if s.get('section_contact','1')=='1' %}<a href="#contact" class="btn-primary"><i class="fas fa-paper-plane"></i> Contact Me</a>{% endif %}
+        {% if resume %}<a href="/api/resume/download" class="btn-outline" style="color:var(--text);border-color:var(--border)"><i class="fas fa-file-alt"></i> Download CV</a>{% endif %}
       </div>
     </div>
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     SKILLS
-═══════════════════════════════════════ -->
+<!-- ══ SKILLS ══ -->
 {% if s.get('section_skills','1')=='1' %}
 <section id="skills">
   <div class="section-header reveal">
@@ -213,48 +156,30 @@
     <p class="section-subtitle">Technologies and tools I work with to build exceptional products.</p>
   </div>
   {% set categories = {} %}
-  {% for skill in skills %}
-    {% if skill.category not in categories %}{% set _ = categories.update({skill.category: []}) %}{% endif %}
-    {% set _ = categories[skill.category].append(skill) %}
-  {% endfor %}
+  {% for skill in skills %}{% if skill.category not in categories %}{% set _ = categories.update({skill.category: []}) %}{% endif %}{% set _ = categories[skill.category].append(skill) %}{% endfor %}
   {% set cat_icons = {'programming':'fa-code','web':'fa-globe','ai':'fa-brain','business':'fa-chart-line','design':'fa-palette'} %}
   {% set cat_labels = {'programming':'Programming','web':'Web Development','ai':'AI & ML','business':'Business','design':'Design'} %}
   <div class="skills-grid container">
     {% for cat, cat_skills in categories.items() %}
     <div class="skill-category reveal" style="animation-delay:{{ loop.index0 * 0.1 }}s">
-      <div class="skill-cat-title">
-        <div class="skill-cat-icon"><i class="fas {{ cat_icons.get(cat,'fa-star') }}"></i></div>
-        {{ cat_labels.get(cat, cat|title) }}
-      </div>
+      <div class="skill-cat-title"><div class="skill-cat-icon"><i class="fas {{ cat_icons.get(cat,'fa-star') }}"></i></div>{{ cat_labels.get(cat, cat|title) }}</div>
       {% for skill in cat_skills %}
       <div class="skill-item">
         <div class="skill-info">
-          <span class="skill-name">
-            {% if skill.icon %}<i class="{{ skill.icon }}" style="margin-right:6px;color:var(--secondary)"></i>{% endif %}
-            {{ skill.name }}
-          </span>
+          <span class="skill-name">{% if skill.icon %}<i class="{{ skill.icon }}" style="margin-right:6px;color:var(--secondary)"></i>{% endif %}{{ skill.name }}</span>
           <span class="skill-pct">{{ skill.level }}%</span>
         </div>
-        <div class="skill-bar">
-          <div class="skill-fill" data-width="{{ skill.level }}"></div>
-        </div>
+        <div class="skill-bar"><div class="skill-fill" data-width="{{ skill.level }}"></div></div>
       </div>
       {% endfor %}
     </div>
     {% endfor %}
-    {% if not skills %}
-    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0;">
-      <i class="fas fa-tools" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-      Skills will appear here once added via the admin panel.
-    </div>
-    {% endif %}
+    {% if not skills %}<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0"><i class="fas fa-tools" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Skills will appear here once added.</div>{% endif %}
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     PORTFOLIO
-═══════════════════════════════════════ -->
+<!-- ══ PORTFOLIO ══ -->
 {% if s.get('section_portfolio','1')=='1' %}
 <section id="portfolio">
   <div class="section-header reveal">
@@ -262,12 +187,7 @@
     <h2 class="section-title">Featured Projects</h2>
     <p class="section-subtitle">A showcase of my best work — from web apps to AI solutions.</p>
   </div>
-  <div class="portfolio-search">
-    <div class="search-input">
-      <i class="fas fa-search" style="color:var(--text-muted)"></i>
-      <input type="text" id="project-search" placeholder="Search projects..."/>
-    </div>
-  </div>
+  <div class="portfolio-search"><div class="search-input"><i class="fas fa-search" style="color:var(--text-muted)"></i><input type="text" id="project-search" placeholder="Search projects..."/></div></div>
   <div class="portfolio-filters reveal">
     <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="web">Web Dev</button>
@@ -278,104 +198,66 @@
   </div>
   <div class="projects-grid container">
     {% for project in projects %}
-    <div class="project-card reveal" data-id="{{ project.id }}" data-category="{{ project.category }}"
-         data-title="{{ project.title }}" data-techs="{{ project.technologies }}"
-         style="animation-delay:{{ loop.index0 * 0.08 }}s">
+    <div class="project-card reveal" data-id="{{ project.id }}" data-category="{{ project.category }}" data-title="{{ project.title }}" data-techs="{{ project.technologies }}" style="animation-delay:{{ loop.index0 * 0.08 }}s">
       <div class="project-cover">
-        {% if project.cover_image %}
-        <img src="/static/{{ project.cover_image }}" alt="{{ project.title }}" loading="lazy"/>
-        {% else %}
-        <div class="project-cover-placeholder"><i class="fas fa-code"></i></div>
-        {% endif %}
+        {% if project.cover_image %}<img src="/static/{{ project.cover_image }}" alt="{{ project.title }}" loading="lazy"/>
+        {% else %}<div class="project-cover-placeholder"><i class="fas fa-code"></i></div>{% endif %}
         <span class="project-status status-{{ project.status }}">{{ project.status|replace('-',' ')|title }}</span>
       </div>
       <div class="project-body">
-        <div class="project-tags">
-          {% for tech in (project.technologies or '').split(',')[:3] %}
-          {% if tech.strip() %}<span class="project-tag">{{ tech.strip() }}</span>{% endif %}
-          {% endfor %}
-        </div>
+        <div class="project-tags">{% for tech in (project.technologies or '').split(',')[:3] %}{% if tech.strip() %}<span class="project-tag">{{ tech.strip() }}</span>{% endif %}{% endfor %}</div>
         <h3 class="project-title">{{ project.title }}</h3>
         <p class="project-desc">{{ project.description }}</p>
         <div class="project-footer">
-          {% if project.github_link %}
-          <span class="project-link" onclick="event.stopPropagation();window.open('{{ project.github_link }}','_blank')">
-            <i class="fab fa-github"></i> Code
-          </span>
-          {% endif %}
-          {% if project.live_link %}
-          <span class="project-link" onclick="event.stopPropagation();window.open('{{ project.live_link }}','_blank')">
-            <i class="fas fa-external-link-alt"></i> Live
-          </span>
-          {% endif %}
-          <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">
-            <i class="fas fa-mouse-pointer" style="margin-right:4px"></i>Details
-          </span>
+          {% if project.github_link %}<span class="project-link" onclick="event.stopPropagation();window.open('{{ project.github_link }}','_blank')"><i class="fab fa-github"></i> Code</span>{% endif %}
+          {% if project.live_link %}<span class="project-link" onclick="event.stopPropagation();window.open('{{ project.live_link }}','_blank')"><i class="fas fa-external-link-alt"></i> Live</span>{% endif %}
+          <span style="margin-left:auto;font-size:.75rem;color:var(--text-muted)"><i class="fas fa-mouse-pointer" style="margin-right:4px"></i>Details</span>
         </div>
       </div>
     </div>
     {% endfor %}
-    {% if not projects %}
-    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:80px 0;">
-      <i class="fas fa-folder-open" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-      Projects will appear here once added.
-    </div>
-    {% endif %}
+    {% if not projects %}<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:80px 0"><i class="fas fa-folder-open" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Projects will appear here once added.</div>{% endif %}
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     COLLABORATIONS
-═══════════════════════════════════════ -->
+<!-- ══ COLLABORATIONS ══ -->
 {% if s.get('section_collaborations','1')=='1' %}
 <section id="collaborations">
   <div class="section-header reveal">
     <div class="section-tag">Collaborations</div>
     <h2 class="section-title">Who I've Worked With</h2>
-    <p class="section-subtitle">Companies and individuals I've had the pleasure of collaborating with.</p>
+    <p class="section-subtitle">Companies and individuals I've collaborated with.</p>
   </div>
   {% if collaborations %}
   <div class="collabs-grid container">
     {% for c in collaborations %}
     <div class="collab-card reveal" style="animation-delay:{{ loop.index0 * 0.1 }}s">
-      <div class="collab-cover">
-        {% if c.cover_image %}<img src="/static/{{ c.cover_image }}" alt="{{ c.name }}"/>{% endif %}
-        {% if c.logo %}
-        <div class="collab-logo-wrap"><img src="/static/{{ c.logo }}" alt="{{ c.name }} logo"/></div>
-        {% endif %}
+      <div class="collab-cover">{% if c.cover_image %}<img src="/static/{{ c.cover_image }}" alt="{{ c.name }}"/>{% endif %}
+        {% if c.logo %}<div class="collab-logo-wrap"><img src="/static/{{ c.logo }}" alt="{{ c.name }}"/></div>{% endif %}
       </div>
       <div class="collab-body">
         <div class="collab-type">{{ c.type|title }}</div>
         <div class="collab-name">{{ c.name }}</div>
         <p class="collab-desc">{{ c.description or '' }}</p>
-        {% if c.website %}
-        <a href="{{ c.website }}" target="_blank" class="project-link" style="margin-top:12px;display:inline-flex;">
-          <i class="fas fa-globe"></i> Visit
-        </a>
-        {% endif %}
+        {% if c.website %}<a href="{{ c.website }}" target="_blank" class="project-link" style="margin-top:12px;display:inline-flex"><i class="fas fa-globe"></i> Visit</a>{% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div style="text-align:center;color:var(--text-muted);padding:60px 0;">
-    <i class="fas fa-handshake" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-    Collaborations will appear here once added.
-  </div>
+  <div style="text-align:center;color:var(--text-muted);padding:60px 0"><i class="fas fa-handshake" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Collaborations will appear here once added.</div>
   {% endif %}
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     EXPERIENCE
-═══════════════════════════════════════ -->
+<!-- ══ EXPERIENCE ══ -->
 {% if s.get('section_experience','1')=='1' %}
 <section id="experience">
   <div class="section-header reveal">
     <div class="section-tag">Experience</div>
     <h2 class="section-title">Professional Journey</h2>
-    <p class="section-subtitle">My career path and the impactful roles that shaped my expertise.</p>
+    <p class="section-subtitle">My career path and the roles that shaped my expertise.</p>
   </div>
   <div class="timeline container">
     {% for exp in experience %}
@@ -383,31 +265,18 @@
       <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
       <div class="timeline-content">
         <div class="timeline-position">{{ exp.position }}</div>
-        <div class="timeline-company">
-          <i class="fas fa-building" style="margin-right:6px"></i>{{ exp.company }}
-          {% if exp.location %} · <i class="fas fa-map-marker-alt" style="margin-right:4px"></i>{{ exp.location }}{% endif %}
-        </div>
-        <div class="timeline-duration">
-          <i class="fas fa-calendar-alt" style="margin-right:6px"></i>
-          {{ exp.duration or (exp.start_date + ' — ' + (exp.end_date or 'Present')) }}
-        </div>
+        <div class="timeline-company"><i class="fas fa-building" style="margin-right:6px"></i>{{ exp.company }}{% if exp.location %} · <i class="fas fa-map-marker-alt" style="margin-right:4px"></i>{{ exp.location }}{% endif %}</div>
+        <div class="timeline-duration"><i class="fas fa-calendar-alt" style="margin-right:6px"></i>{{ exp.duration or (exp.start_date + ' — ' + (exp.end_date or 'Present')) }}</div>
         {% if exp.description %}<p class="timeline-desc">{{ exp.description }}</p>{% endif %}
       </div>
     </div>
     {% endfor %}
-    {% if not experience %}
-    <div style="text-align:center;color:var(--text-muted);padding:60px 0;">
-      <i class="fas fa-briefcase" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-      Experience will appear here once added.
-    </div>
-    {% endif %}
+    {% if not experience %}<div style="text-align:center;color:var(--text-muted);padding:60px 0"><i class="fas fa-briefcase" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Experience will appear here once added.</div>{% endif %}
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     CERTIFICATIONS
-═══════════════════════════════════════ -->
+<!-- ══ CERTIFICATIONS ══ -->
 {% if s.get('section_certifications','1')=='1' %}
 <section id="certifications">
   <div class="section-header reveal">
@@ -418,51 +287,30 @@
   <div class="certs-grid container">
     {% for cert in certifications %}
     <div class="cert-card reveal" style="animation-delay:{{ loop.index0 * 0.1 }}s">
-      <div class="cert-img">
-        {% if cert.image %}
-        <img src="/static/{{ cert.image }}" alt="{{ cert.title }}" loading="lazy"/>
-        {% else %}
-        <div class="cert-img-placeholder" style="background:linear-gradient(135deg,var(--primary),#1a3a5c);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;">
-          <i class="fas fa-certificate" style="font-size:2.5rem;color:rgba(255,255,255,0.25)"></i>
-        </div>
-        {% endif %}
+      <div class="cert-img">{% if cert.image %}<img src="/static/{{ cert.image }}" alt="{{ cert.title }}" loading="lazy"/>
+        {% else %}<div class="cert-img-placeholder" style="background:linear-gradient(135deg,var(--primary),#1a3a5c);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center"><i class="fas fa-certificate" style="font-size:2.5rem;color:rgba(255,255,255,.25)"></i></div>{% endif %}
       </div>
       <div class="cert-body">
         <div class="cert-title">{{ cert.title }}</div>
         <div class="cert-org"><i class="fas fa-university" style="margin-right:4px"></i>{{ cert.organization or '' }}</div>
         <div class="cert-date"><i class="fas fa-calendar" style="margin-right:4px"></i>{{ cert.date or '' }}</div>
-        {% if cert.credential_url %}
-        <a href="{{ cert.credential_url }}" target="_blank" class="project-link" style="margin-top:10px;display:inline-flex;font-size:0.78rem;">
-          <i class="fas fa-external-link-alt"></i> Verify
-        </a>
-        {% endif %}
-        {% if cert.pdf %}
-        <a href="/static/{{ cert.pdf }}" target="_blank" class="project-link" style="margin-top:10px;margin-left:8px;display:inline-flex;font-size:0.78rem;">
-          <i class="fas fa-file-pdf"></i> PDF
-        </a>
-        {% endif %}
+        {% if cert.credential_url %}<a href="{{ cert.credential_url }}" target="_blank" class="project-link" style="margin-top:10px;display:inline-flex;font-size:.78rem"><i class="fas fa-external-link-alt"></i> Verify</a>{% endif %}
+        {% if cert.pdf %}<a href="/static/{{ cert.pdf }}" target="_blank" class="project-link" style="margin-top:10px;margin-left:8px;display:inline-flex;font-size:.78rem"><i class="fas fa-file-pdf"></i> PDF</a>{% endif %}
       </div>
     </div>
     {% endfor %}
-    {% if not certifications %}
-    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0;">
-      <i class="fas fa-certificate" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-      Certifications will appear here once added.
-    </div>
-    {% endif %}
+    {% if not certifications %}<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0"><i class="fas fa-certificate" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Certifications will appear here once added.</div>{% endif %}
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     TESTIMONIALS
-═══════════════════════════════════════ -->
+<!-- ══ TESTIMONIALS ══ -->
 {% if s.get('section_testimonials','1')=='1' %}
 <section id="testimonials">
   <div class="section-header reveal">
-    <div class="section-tag" style="color:rgba(255,255,255,0.6)">Testimonials</div>
+    <div class="section-tag" style="color:rgba(255,255,255,.6)">Testimonials</div>
     <h2 class="section-title" style="color:#fff">What People Say</h2>
-    <p class="section-subtitle" style="color:rgba(255,255,255,0.7)">Feedback from clients and collaborators.</p>
+    <p class="section-subtitle" style="color:rgba(255,255,255,.7)">Feedback from clients and collaborators.</p>
   </div>
   <div class="testimonials-slider reveal">
     <div class="testimonials-track">
@@ -471,18 +319,11 @@
         <div class="testimonial-quote">"</div>
         <p class="testimonial-text">{{ t.message }}</p>
         <div class="testimonial-author">
-          {% if t.image %}
-          <img src="/static/{{ t.image }}" alt="{{ t.name }}" class="testimonial-photo"/>
-          {% else %}
-          <div class="testimonial-photo-placeholder"><i class="fas fa-user"></i></div>
-          {% endif %}
-          <div>
-            <div class="testimonial-name">{{ t.name }}</div>
-            <div class="testimonial-role">{{ t.position or '' }}{% if t.company %}, {{ t.company }}{% endif %}</div>
-            <div class="testimonial-stars">
-              {% for i in range(t.rating or 5) %}★{% endfor %}
-            </div>
-          </div>
+          {% if t.image %}<img src="/static/{{ t.image }}" alt="{{ t.name }}" class="testimonial-photo"/>
+          {% else %}<div class="testimonial-photo-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+          <div><div class="testimonial-name">{{ t.name }}</div>
+          <div class="testimonial-role">{{ t.position or '' }}{% if t.company %}, {{ t.company }}{% endif %}</div>
+          <div class="testimonial-stars">{% for i in range(t.rating or 5) %}★{% endfor %}</div></div>
         </div>
       </div>
       {% endfor %}
@@ -490,34 +331,21 @@
       <div class="testimonial-card">
         <div class="testimonial-quote">"</div>
         <p class="testimonial-text">Testimonials will appear here once added via the admin panel.</p>
-        <div class="testimonial-author">
-          <div class="testimonial-photo-placeholder"><i class="fas fa-user"></i></div>
-          <div>
-            <div class="testimonial-name">Client Name</div>
-            <div class="testimonial-role">Position, Company</div>
-            <div class="testimonial-stars">★★★★★</div>
-          </div>
-        </div>
+        <div class="testimonial-author"><div class="testimonial-photo-placeholder"><i class="fas fa-user"></i></div>
+        <div><div class="testimonial-name">Client Name</div><div class="testimonial-role">Position, Company</div><div class="testimonial-stars">★★★★★</div></div></div>
       </div>
       {% endif %}
     </div>
     <div class="slider-controls">
       <button class="slider-btn" id="prev-slide"><i class="fas fa-arrow-left"></i></button>
-      <div class="slider-dots">
-        {% for t in testimonials %}
-        <div class="slider-dot {% if loop.first %}active{% endif %}"></div>
-        {% endfor %}
-        {% if not testimonials %}<div class="slider-dot active"></div>{% endif %}
-      </div>
+      <div class="slider-dots">{% for t in testimonials %}<div class="slider-dot {% if loop.first %}active{% endif %}"></div>{% endfor %}{% if not testimonials %}<div class="slider-dot active"></div>{% endif %}</div>
       <button class="slider-btn" id="next-slide"><i class="fas fa-arrow-right"></i></button>
     </div>
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     GALLERY
-═══════════════════════════════════════ -->
+<!-- ══ GALLERY ══ -->
 {% if s.get('section_gallery','1')=='1' %}
 <section id="gallery">
   <div class="section-header reveal">
@@ -528,108 +356,52 @@
   <div class="gallery-grid container">
     {% for item in gallery %}
     <div class="gallery-item" data-src="/static/{{ item.file_path }}" data-type="{{ item.file_type }}">
-      {% if item.file_type == 'video' %}
-      <video src="/static/{{ item.file_path }}" muted loop preload="none"></video>
-      {% else %}
-      <img src="/static/{{ item.file_path }}" alt="{{ item.title or 'Gallery' }}" loading="lazy"/>
-      {% endif %}
+      {% if item.file_type=='video' %}<video src="/static/{{ item.file_path }}" muted loop preload="none"></video>
+      {% else %}<img src="/static/{{ item.file_path }}" alt="{{ item.title or 'Gallery' }}" loading="lazy"/>{% endif %}
       <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
     </div>
     {% endfor %}
-    {% if not gallery %}
-    <div style="column-span:all;text-align:center;color:var(--text-muted);padding:60px 0;">
-      <i class="fas fa-images" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>
-      Gallery items will appear here once added.
-    </div>
-    {% endif %}
+    {% if not gallery %}<div style="column-span:all;text-align:center;color:var(--text-muted);padding:60px 0"><i class="fas fa-images" style="font-size:3rem;opacity:.3;display:block;margin-bottom:16px"></i>Gallery items will appear here once added.</div>{% endif %}
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     RESUME / CV
-═══════════════════════════════════════ -->
+<!-- ══ RESUME ══ -->
 {% if s.get('section_resume','1')=='1' %}
 <section id="resume">
   <div class="section-header reveal">
     <div class="section-tag">Resume</div>
     <h2 class="section-title">My CV / Resume</h2>
-    <p class="section-subtitle">View, download, or scan to access my full professional resume.</p>
+    <p class="section-subtitle">View, download, or scan to access my full resume.</p>
   </div>
   <div class="resume-wrap container">
     <div class="resume-info reveal-left">
-      <div class="resume-stat">
-        <div class="resume-stat-icon"><i class="fas fa-file-alt"></i></div>
-        <div>
-          <div class="resume-stat-label">Document</div>
-          <div class="resume-stat-val">Curriculum Vitae</div>
-        </div>
-      </div>
-      <div class="resume-stat">
-        <div class="resume-stat-icon"><i class="fas fa-calendar-check"></i></div>
-        <div>
-          <div class="resume-stat-label">Last Updated</div>
-          <div class="resume-stat-val">
-            {% if resume %}{{ resume.updated_at[:10] }}{% else %}—{% endif %}
-          </div>
-        </div>
-      </div>
-      <div class="resume-stat">
-        <div class="resume-stat-icon"><i class="fas fa-download"></i></div>
-        <div>
-          <div class="resume-stat-label">Downloads</div>
-          <div class="resume-stat-val">{{ resume.download_count if resume else 0 }}+</div>
-        </div>
-      </div>
-
+      <div class="resume-stat"><div class="resume-stat-icon"><i class="fas fa-file-alt"></i></div><div><div class="resume-stat-label">Document</div><div class="resume-stat-val">Curriculum Vitae</div></div></div>
+      <div class="resume-stat"><div class="resume-stat-icon"><i class="fas fa-calendar-check"></i></div><div><div class="resume-stat-label">Last Updated</div><div class="resume-stat-val">{% if resume %}{{ resume.updated_at[:10] }}{% else %}—{% endif %}</div></div></div>
+      <div class="resume-stat"><div class="resume-stat-icon"><i class="fas fa-download"></i></div><div><div class="resume-stat-label">Downloads</div><div class="resume-stat-val">{{ resume.download_count if resume else 0 }}+</div></div></div>
       {% if resume %}
-      <!-- ── CV Action Buttons ── -->
-      <div class="resume-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;">
-        <!-- VIEW button — works for both PDF and image -->
-        {% set cv_ext = resume.file_path.rsplit('.',1)[-1].lower() if resume.file_path else 'pdf' %}
+      {% set cv_ext = resume.file_path.rsplit('.',1)[-1].lower() if resume.file_path else 'pdf' %}
+      <div class="resume-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
         {% if cv_ext in ['jpg','jpeg','png'] %}
-        <button class="btn-download" onclick="document.getElementById('cv-preview-modal').classList.add('open');document.body.style.overflow='hidden'">
-          <i class="fas fa-eye"></i> View CV
-        </button>
+        <button class="btn-download" onclick="document.getElementById('cv-preview-modal').classList.add('open');document.body.style.overflow='hidden'"><i class="fas fa-eye"></i> View CV</button>
         {% else %}
-        <a href="/static/{{ resume.file_path }}" target="_blank" class="btn-download">
-          <i class="fas fa-eye"></i> View CV
-        </a>
+        <a href="/static/{{ resume.file_path }}" target="_blank" class="btn-download"><i class="fas fa-eye"></i> View CV</a>
         {% endif %}
-
-        <!-- DOWNLOAD button -->
-        <a href="/api/resume/download" class="btn-download" style="background:linear-gradient(135deg,var(--primary),var(--secondary));">
-          <i class="fas fa-download"></i> Download CV
-        </a>
+        <a href="/api/resume/download" class="btn-download" style="background:linear-gradient(135deg,var(--primary),var(--secondary))"><i class="fas fa-download"></i> Download CV</a>
       </div>
-
       {% else %}
-      <div style="margin-top:32px;padding:20px;background:var(--bg2);border-radius:12px;text-align:center;color:var(--text-muted);">
-        <i class="fas fa-file-upload" style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.4;"></i>
-        Resume not uploaded yet.
-      </div>
+      <div style="margin-top:32px;padding:20px;background:var(--bg2);border-radius:12px;text-align:center;color:var(--text-muted)"><i class="fas fa-file-upload" style="font-size:2rem;display:block;margin-bottom:8px;opacity:.4"></i>Resume not uploaded yet.</div>
       {% endif %}
     </div>
-
-    <!-- QR Code side -->
     <div class="resume-qr-wrap reveal-right">
-      {% if resume %}
-      <img id="resume-qr" src="" alt="QR Code" style="display:block;"/>
-      <div class="qr-label" style="margin-top:12px;font-size:0.85rem;color:var(--text-muted);">Scan to download resume</div>
-      {% else %}
-      <div style="width:180px;height:180px;border:2px dashed var(--border);border-radius:12px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:var(--text-muted);flex-direction:column;gap:8px;">
-        <i class="fas fa-qrcode" style="font-size:2.5rem;opacity:0.3;"></i>
-        <span style="font-size:0.75rem;">QR after upload</span>
-      </div>
-      {% endif %}
+      {% if resume %}<img id="resume-qr" src="" alt="QR Code" style="display:block"/><div class="qr-label" style="margin-top:12px;font-size:.85rem;color:var(--text-muted)">Scan to download resume</div>
+      {% else %}<div style="width:180px;height:180px;border:2px dashed var(--border);border-radius:12px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:var(--text-muted);flex-direction:column;gap:8px"><i class="fas fa-qrcode" style="font-size:2.5rem;opacity:.3"></i><span style="font-size:.75rem">QR after upload</span></div>{% endif %}
     </div>
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     CONTACT
-═══════════════════════════════════════ -->
+<!-- ══ CONTACT ══ -->
 {% if s.get('section_contact','1')=='1' %}
 <section id="contact">
   <div class="section-header reveal">
@@ -639,80 +411,36 @@
   </div>
   <div class="contact-wrap container">
     <div class="contact-info reveal-left">
-      <div class="contact-info-item">
-        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-        <div>
-          <div class="contact-label">Email</div>
-          <div class="contact-val">{{ s.get('email','') }}</div>
-        </div>
-      </div>
-      <div class="contact-info-item">
-        <div class="contact-icon"><i class="fas fa-phone"></i></div>
-        <div>
-          <div class="contact-label">Phone</div>
-          <div class="contact-val">{{ s.get('phone','') }}</div>
-        </div>
-      </div>
-      <div class="contact-info-item">
-        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-        <div>
-          <div class="contact-label">Location</div>
-          <div class="contact-val">{{ s.get('location','') }}</div>
-        </div>
-      </div>
-      <div style="margin-top:32px;">
-        <div style="font-weight:700;margin-bottom:16px;color:var(--text);">Follow Me</div>
-        <div style="display:flex;gap:12px;">
-          {% if s.get('github') %}<a href="{{ s.github }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);"><i class="fab fa-github"></i></a>{% endif %}
-          {% if s.get('linkedin') %}<a href="{{ s.linkedin }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);"><i class="fab fa-linkedin-in"></i></a>{% endif %}
-          {% if s.get('twitter') %}<a href="{{ s.twitter }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);"><i class="fab fa-twitter"></i></a>{% endif %}
+      {% if s.get('email') %}<div class="contact-info-item"><div class="contact-icon"><i class="fas fa-envelope"></i></div><div><div class="contact-label">Email</div><div class="contact-val">{{ s.get('email','') }}</div></div></div>{% endif %}
+      {% if s.get('phone') %}<div class="contact-info-item"><div class="contact-icon"><i class="fas fa-phone"></i></div><div><div class="contact-label">Phone</div><div class="contact-val">{{ s.get('phone','') }}</div></div></div>{% endif %}
+      {% if s.get('location') %}<div class="contact-info-item"><div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="contact-label">Location</div><div class="contact-val">{{ s.get('location','') }}</div></div></div>{% endif %}
+      <div style="margin-top:32px"><div style="font-weight:700;margin-bottom:16px;color:var(--text)">Follow Me</div>
+        <div style="display:flex;gap:12px">
+          {% if s.get('github') %}<a href="{{ s.github }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)"><i class="fab fa-github"></i></a>{% endif %}
+          {% if s.get('linkedin') %}<a href="{{ s.linkedin }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+          {% if s.get('twitter') %}<a href="{{ s.twitter }}" target="_blank" class="social-icon" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)"><i class="fab fa-twitter"></i></a>{% endif %}
         </div>
       </div>
     </div>
     <div class="contact-form reveal-right">
       <form id="contact-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Your Name *</label>
-            <input type="text" name="name" class="form-control" placeholder="John Doe" required/>
-          </div>
-          <div class="form-group">
-            <label>Email Address *</label>
-            <input type="email" name="email" class="form-control" placeholder="john@example.com" required/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" name="phone" class="form-control" placeholder="+91 99999 00000"/>
-          </div>
-          <div class="form-group">
-            <label>Subject *</label>
-            <input type="text" name="subject" class="form-control" placeholder="Project Inquiry" required/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Message *</label>
-          <textarea name="message" class="form-control" placeholder="Tell me about your project..." required></textarea>
-        </div>
-        <button type="submit" class="btn-send">
-          <i class="fas fa-paper-plane"></i> Send Message
-        </button>
-        <div id="form-msg" class="form-msg" style="display:none;"></div>
+        <div class="form-row"><div class="form-group"><label>Your Name *</label><input type="text" name="name" class="form-control" placeholder="John Doe" required/></div><div class="form-group"><label>Email Address *</label><input type="email" name="email" class="form-control" placeholder="john@example.com" required/></div></div>
+        <div class="form-row"><div class="form-group"><label>Phone</label><input type="tel" name="phone" class="form-control" placeholder="+91 99999 00000"/></div><div class="form-group"><label>Subject *</label><input type="text" name="subject" class="form-control" placeholder="Project Inquiry" required/></div></div>
+        <div class="form-group"><label>Message *</label><textarea name="message" class="form-control" placeholder="Tell me about your project..." required></textarea></div>
+        <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> Send Message</button>
+        <div id="form-msg" class="form-msg" style="display:none"></div>
       </form>
     </div>
   </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════ -->
+<!-- ══ FOOTER ══ -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="footer-logo">H<span>.</span>Khandhar</div>
-      <p class="footer-desc">{{ s.get('bio','Passionate developer crafting innovative digital experiences.') }}</p>
+      <div class="footer-logo">{{ s.get('name','H').split()[0][0] }}<span>.</span>{{ s.get('name','Khandhar').split()[-1] }}</div>
+      <p class="footer-desc">{{ s.get('bio','') }}</p>
       <div class="footer-socials">
         {% if s.get('github') %}<a href="{{ s.github }}" class="footer-social" target="_blank"><i class="fab fa-github"></i></a>{% endif %}
         {% if s.get('linkedin') %}<a href="{{ s.linkedin }}" class="footer-social" target="_blank"><i class="fab fa-linkedin-in"></i></a>{% endif %}
@@ -741,71 +469,100 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">
-      © 2024 <span id="footer-trigger">Harshil Sandip Khandhar</span>. All rights reserved.
-    </p>
+    <p class="footer-copy">© 2024 <span id="footer-trigger">{{ s.get('name','Harshil Sandip Khandhar') }}</span>. All rights reserved.</p>
   </div>
 </footer>
 
-<!-- ══════════════════════════════════════
-     CV IMAGE PREVIEW MODAL
-     (shown when resume is a JPG/PNG)
-═══════════════════════════════════════ -->
-{% if resume %}
-{% set cv_ext = resume.file_path.rsplit('.',1)[-1].lower() if resume.file_path else 'pdf' %}
-{% if cv_ext in ['jpg','jpeg','png'] %}
-<div class="modal-overlay" id="cv-preview-modal">
-  <div class="modal" style="max-width:860px;border-radius:16px;overflow:hidden;">
-    <button class="modal-close" onclick="document.getElementById('cv-preview-modal').classList.remove('open');document.body.style.overflow=''">
-      <i class="fas fa-times"></i>
-    </button>
-    <div style="padding:12px;background:var(--bg2);text-align:center;">
-      <img src="/static/{{ resume.file_path }}" alt="CV / Resume"
-           style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:8px;display:block;margin:0 auto;"/>
+<!-- ══ SELLING MODE BANNER ══ -->
+{% if s.get('selling_mode','0')=='1' %}
+<div id="selling-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:800;background:linear-gradient(135deg,#0a2540,#1a73e8);color:#fff;padding:0;box-shadow:0 -4px 30px rgba(0,0,0,0.3);transform:translateY(100%);transition:transform .5s cubic-bezier(.4,0,.2,1)">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🛒</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem">{{ s.get('selling_title','This Portfolio is For Sale') }}</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75)">{{ s.get('selling_desc','Get this premium portfolio for your own use.') }}</div>
+      </div>
     </div>
-    <div style="padding:16px 24px;display:flex;gap:12px;justify-content:center;">
-      <a href="/api/resume/download" class="btn-download" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--secondary),var(--accent));color:#fff;padding:12px 28px;border-radius:99px;font-weight:600;text-decoration:none;">
-        <i class="fas fa-download"></i> Download CV
-      </a>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="font-family:monospace;font-size:1.4rem;font-weight:700;color:#00d4ff">{{ s.get('selling_price','$99') }}</div>
+      <button onclick="document.getElementById('selling-modal').classList.add('open');document.body.style.overflow='hidden'" style="background:#00d4ff;color:#0a2540;border:none;padding:10px 24px;border-radius:99px;font-weight:700;font-size:.9rem;cursor:pointer;transition:transform .2s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Buy Now</button>
+      <button onclick="document.getElementById('selling-banner').style.transform='translateY(100%)'" style="background:rgba(255,255,255,.15);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+  </div>
+</div>
+<script>setTimeout(()=>{const b=document.getElementById('selling-banner');if(b)b.style.transform='translateY(0)'},3000);</script>
+{% endif %}
+
+<!-- ══ SELLING INQUIRY MODAL ══ -->
+{% if s.get('selling_mode','0')=='1' %}
+<div class="modal-overlay" id="selling-modal">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close"><i class="fas fa-times"></i></button>
+    <div class="modal-body" style="padding:40px">
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem">🛒</div>
+        <h2 style="font-family:var(--font-heading);font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:8px">{{ s.get('selling_title','Get This Portfolio') }}</h2>
+        <div style="font-size:2rem;font-weight:700;color:var(--secondary);margin-bottom:8px">{{ s.get('selling_price','$99') }}</div>
+        <p style="color:var(--text-muted);font-size:.9rem">{{ s.get('selling_desc','') }}</p>
+      </div>
+      {% if s.get('selling_features') %}
+      <div style="background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:28px">
+        <div style="font-weight:700;margin-bottom:12px;color:var(--text)">What's Included:</div>
+        {% for feat in s.get('selling_features','').split('|') %}{% if feat.strip() %}
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.875rem;color:var(--text-muted)"><span style="color:#10b981;font-weight:700">✓</span> {{ feat.strip() }}</div>
+        {% endif %}{% endfor %}
+      </div>
+      {% endif %}
+      <form id="sell-inquiry-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div><label style="font-size:.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Your Name *</label><input type="text" name="name" class="form-control" required/></div>
+          <div><label style="font-size:.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Email *</label><input type="email" name="email" class="form-control" required/></div>
+        </div>
+        <div style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Budget</label><input type="text" name="budget" class="form-control" placeholder="{{ s.get('selling_price','$99') }}"/></div>
+        <div style="margin-bottom:20px"><label style="font-size:.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Message (optional)</label><textarea name="message" class="form-control" rows="3" placeholder="Any customization requests?"></textarea></div>
+        <button type="submit" class="btn-send"><i class="fas fa-shopping-cart"></i> Send Purchase Inquiry</button>
+        <div id="sell-form-msg" style="margin-top:12px;text-align:center;font-size:.875rem;display:none"></div>
+      </form>
+      {% if s.get('selling_demo_url') %}<div style="text-align:center;margin-top:16px;font-size:.85rem;color:var(--text-muted)">Live demo: <a href="{{ s.selling_demo_url }}" target="_blank" style="color:var(--secondary)">{{ s.selling_demo_url }}</a></div>{% endif %}
+      {% if s.get('selling_contact_email') %}<div style="text-align:center;margin-top:8px;font-size:.85rem;color:var(--text-muted)">Or email directly: <a href="mailto:{{ s.selling_contact_email }}" style="color:var(--secondary)">{{ s.selling_contact_email }}</a></div>{% endif %}
     </div>
   </div>
 </div>
 {% endif %}
-{% endif %}
 
-<!-- ══════════════════════════════════════
-     PROJECT MODAL
-═══════════════════════════════════════ -->
+<!-- ══ CV IMAGE PREVIEW MODAL ══ -->
+{% if resume %}{% set cv_ext = resume.file_path.rsplit('.',1)[-1].lower() if resume.file_path else 'pdf' %}
+{% if cv_ext in ['jpg','jpeg','png'] %}
+<div class="modal-overlay" id="cv-preview-modal">
+  <div class="modal" style="max-width:860px;border-radius:16px;overflow:hidden">
+    <button class="modal-close" onclick="document.getElementById('cv-preview-modal').classList.remove('open');document.body.style.overflow=''"><i class="fas fa-times"></i></button>
+    <div style="padding:12px;background:var(--bg2);text-align:center"><img src="/static/{{ resume.file_path }}" alt="CV" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:8px;display:block;margin:0 auto"/></div>
+    <div style="padding:16px 24px;display:flex;gap:12px;justify-content:center"><a href="/api/resume/download" class="btn-download" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--secondary),var(--accent));color:#fff;padding:12px 28px;border-radius:99px;font-weight:600;text-decoration:none"><i class="fas fa-download"></i> Download CV</a></div>
+  </div>
+</div>
+{% endif %}{% endif %}
+
+<!-- ══ PROJECT MODAL ══ -->
 <div class="modal-overlay" id="project-modal">
   <div class="modal">
     <button class="modal-close"><i class="fas fa-times"></i></button>
-    <div class="modal-cover">
-      <img id="modal-cover" src="" alt="" style="width:100%;height:100%;object-fit:cover;"/>
-    </div>
+    <div class="modal-cover"><img id="modal-cover" src="" alt="" style="width:100%;height:100%;object-fit:cover"/></div>
     <div class="modal-body">
       <h2 class="modal-title" id="modal-title"></h2>
       <div class="modal-date" id="modal-date"></div>
       <div class="modal-techs" id="modal-techs"></div>
       <p class="modal-desc" id="modal-desc"></p>
-      <div class="modal-features">
-        <h4>Key Features</h4>
-        <ul id="modal-features-list"></ul>
-      </div>
+      <div class="modal-features"><h4>Key Features</h4><ul id="modal-features-list"></ul></div>
       <div class="modal-links">
-        <a href="#" id="modal-github" class="modal-link secondary" target="_blank">
-          <i class="fab fa-github"></i> View Code
-        </a>
-        <a href="#" id="modal-live" class="modal-link primary" target="_blank">
-          <i class="fas fa-external-link-alt"></i> Live Demo
-        </a>
+        <a href="#" id="modal-github" class="modal-link secondary" target="_blank"><i class="fab fa-github"></i> View Code</a>
+        <a href="#" id="modal-live" class="modal-link primary" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     ADMIN LOGIN MODAL
-═══════════════════════════════════════ -->
+<!-- ══ ADMIN LOGIN MODAL ══ -->
 <div class="modal-overlay" id="admin-login-modal">
   <div class="admin-login-box">
     <div class="admin-login-icon"><i class="fas fa-shield-alt"></i></div>
@@ -817,36 +574,47 @@
         <button type="button" class="password-toggle">👁</button>
       </div>
       <div class="login-error" id="login-error"></div>
-      <button type="submit" class="btn-primary" style="justify-content:center;width:100%;">
-        <i class="fas fa-sign-in-alt"></i> Login
-      </button>
+      <button type="submit" class="btn-primary" style="justify-content:center;width:100%"><i class="fas fa-sign-in-alt"></i> Login</button>
     </form>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     LIGHTBOX
-═══════════════════════════════════════ -->
+<!-- ══ LIGHTBOX ══ -->
 <div id="lightbox">
   <button id="lightbox-close"><i class="fas fa-times"></i></button>
-  <img id="lightbox-img" src="" alt="Gallery" style="display:none;"/>
-  <video id="lightbox-video" controls style="display:none;"></video>
+  <img id="lightbox-img" src="" alt="" style="display:none"/>
+  <video id="lightbox-video" controls style="display:none"></video>
 </div>
 
-<!-- ── Back to Top ── -->
 <button id="back-to-top" title="Back to top"><i class="fas fa-arrow-up"></i></button>
-
-<!-- ── Toast Container ── -->
 <div id="toast-container"></div>
 
 <script>
-  window.TYPED_PHRASES = [
-    '{{ s.get("tagline","Full Stack Developer").split("|")[0].strip() }}',
-    'AI Enthusiast',
-    'Problem Solver',
-    'Open Source Contributor'
-  ];
+window.TYPED_PHRASES = {{ s.get('typing_phrases','Full Stack Developer|AI Enthusiast|Problem Solver').split('|') | tojson }};
 </script>
 <script src="/static/js/main.js"></script>
+<script>
+// Selling inquiry form
+document.getElementById('sell-inquiry-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const data = Object.fromEntries(new FormData(e.target));
+  const res  = await fetch('/api/sell-inquiry', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  const json = await res.json();
+  const msg  = document.getElementById('sell-form-msg');
+  if (json.success) {
+    msg.textContent = '✓ Inquiry sent! We\'ll contact you soon.';
+    msg.style.cssText = 'display:block;color:#10b981;background:rgba(16,185,129,.1);padding:10px;border-radius:8px';
+    e.target.reset();
+  } else {
+    msg.textContent = '✗ Something went wrong. Please try again.';
+    msg.style.cssText = 'display:block;color:#ef4444;background:rgba(239,68,68,.1);padding:10px;border-radius:8px';
+  }
+  btn.disabled = false; btn.textContent = 'Send Purchase Inquiry';
+});
+</script>
+<!-- Custom body HTML injected by admin -->
+{% if s.get('custom_html_body') %}{{ s.custom_html_body | safe }}{% endif %}
 </body>
 </html>
