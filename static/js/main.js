@@ -1,9 +1,21 @@
 /* ── Loading Screen ── */
 window.addEventListener('load', () => {
   setTimeout(() => {
-    document.getElementById('loading-screen')?.classList.add('hide');
+    const ls = document.getElementById('loading-screen');
+    if (ls) ls.classList.add('hide');
+    // Always restore scroll — critical fix
+    document.body.style.overflow = '';
+    document.body.style.background = '';
   }, 1800);
 });
+
+// Safety net: if load event never fires, restore after 3s
+setTimeout(() => {
+  document.body.style.overflow = '';
+  document.body.style.background = '';
+  const ls = document.getElementById('loading-screen');
+  if (ls) ls.classList.add('hide');
+}, 3000);
 
 /* ── Theme Toggle ── */
 const root = document.documentElement;

@@ -119,6 +119,7 @@ def init_db():
             'card_style':'rounded','btn_style':'pill',
             'show_back_to_top':'1','show_scroll_progress':'1',
             'footer_copyright':'All rights reserved.',
+            'loader_text':'HSK',
         }
         for k, v in defaults.items():
             db.execute("INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)", (k, v))
@@ -369,7 +370,7 @@ def update_settings():
         'announcement_enabled','maintenance_mode','maintenance_msg',
         'users_can_register','hero_btn1_text','hero_btn2_text',
         'card_style','btn_style','show_back_to_top','show_scroll_progress',
-        'footer_copyright','favicon',
+        'footer_copyright','favicon','loader_text',
     } | {f'section_{s}' for s in [
         'about','skills','portfolio','collaborations','experience',
         'certifications','testimonials','gallery','resume','contact',

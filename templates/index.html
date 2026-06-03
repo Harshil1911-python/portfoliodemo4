@@ -43,6 +43,44 @@
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--secondary),var(--accent));z-index:9999;transition:width .1s linear}
 
   </style>
+
+  <!-- Critical inline CSS — prevents flash of unstyled content -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a2540}
+    #loading-screen{
+      position:fixed;inset:0;z-index:9999;
+      background:#0a2540;
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:24px;
+      transition:opacity .6s ease,visibility .6s ease;
+    }
+    #loading-screen.hide{opacity:0;visibility:hidden}
+    .loader-name{
+      font-family:'Playfair Display',Georgia,serif;
+      font-size:2.5rem;font-weight:700;color:#fff;letter-spacing:.05em;
+    }
+    .loader-bar{width:200px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+    .loader-bar-fill{
+      height:100%;width:0;
+      background:linear-gradient(90deg,#1a73e8,#00d4ff);
+      border-radius:99px;animation:loadbar 1.8s ease forwards;
+    }
+    @keyframes loadbar{to{width:100%}}
+  </style>
+
+  <script>
+    // Restore scroll and background as soon as DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.overflow = '';
+      document.body.style.background = '';
+    });
+    // Fallback — always restore after 2s no matter what
+    setTimeout(function() {
+      document.body.style.overflow = '';
+      document.body.style.background = '';
+    }, 2100);
+  </script>
 </head>
 <body>
 
@@ -60,7 +98,7 @@
 
 <!-- ── Loading Screen ── -->
 <div id="loading-screen">
-  <div class="loader-name">{{ s.get('name','HSK').split()[0][0] }}{{ s.get('name','HSK').split()[1][0] if s.get('name','').split()|length > 1 else '' }}{{ s.get('name','HSK').split()[2][0] if s.get('name','').split()|length > 2 else '' }}</div>
+  <div class="loader-name">{{ s.get('loader_text', s.get('name','Portfolio').split()[0][0] + (s.get('name','').split()[1][0] if s.get('name','').split()|length > 1 else '') + (s.get('name','').split()[2][0] if s.get('name','').split()|length > 2 else '')) }}</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
 
