@@ -33,6 +33,17 @@
     <div class="sidebar-link" data-target="theme"><i class="fas fa-paint-brush"></i> Theme</div>
     <div class="sidebar-link" data-target="customhtml"><i class="fas fa-code"></i> Custom HTML</div>
     <div class="sidebar-link" data-target="selling"><i class="fas fa-shopping-cart"></i> Selling Mode</div>
+    <div class="sidebar-section-label">More Content</div>
+    <div class="sidebar-link" data-target="blog"><i class="fas fa-newspaper"></i> Blog Posts</div>
+    <div class="sidebar-link" data-target="services"><i class="fas fa-concierge-bell"></i> Services</div>
+    <div class="sidebar-link" data-target="achievements"><i class="fas fa-trophy"></i> Achievements</div>
+    <div class="sidebar-link" data-target="announcements"><i class="fas fa-bullhorn"></i> Announcement</div>
+    <div class="sidebar-section-label">Site</div>
+    <div class="sidebar-link" data-target="favicon"><i class="fas fa-star"></i> Favicon</div>
+    <div class="sidebar-link" data-target="seo"><i class="fas fa-search"></i> SEO & Analytics</div>
+    <div class="sidebar-link" data-target="maintenance"><i class="fas fa-tools"></i> Maintenance</div>
+    <div class="sidebar-link" data-target="custom-links"><i class="fas fa-link"></i> Custom Links</div>
+    <div class="sidebar-link" data-target="site-users"><i class="fas fa-users"></i> Site Users</div>
     <div class="sidebar-section-label">Account</div>
     <div class="sidebar-link" data-target="security"><i class="fas fa-shield-alt"></i> Security</div>
   </nav>
@@ -80,17 +91,21 @@
     <div class="admin-panel" id="panel-messages">
       <div class="admin-card">
         <div class="admin-card-title"><i class="fas fa-envelope"></i> All Messages</div>
-        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead><tbody>
-          {% for m in messages %}<tr>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Subject</th><th>Preview</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+          {% for m in messages %}
+          <tr style="cursor:pointer" onclick="openMsgDetail({{m.id}},'{{m.name|e}}','{{m.email or ''}}','{{m.phone or ''}}','{{m.subject or ''|e}}','{{m.message or ''|e|replace("'","&#39;")|replace(chr(10),"\\n")}}','{{m.created_at[:16]}}',{{0 if m.is_read else 1}})">
             <td><strong>{{m.name}}</strong>{% if not m.is_read %}<span class="unread-badge">New</span>{% endif %}</td>
-            <td>{{m.email or '—'}}</td><td>{{m.subject or '—'}}</td>
-            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{m.message or '—'}}</td>
+            <td>{% if m.email %}<a href="mailto:{{m.email}}" style="color:var(--secondary)" onclick="event.stopPropagation()">{{m.email}}</a>{% else %}—{% endif %}</td>
+            <td>{% if m.phone %}<a href="tel:{{m.phone}}" style="color:var(--secondary)" onclick="event.stopPropagation()">{{m.phone}}</a>{% else %}—{% endif %}</td>
+            <td>{{m.subject or '—'}}</td>
+            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);font-size:.82rem">{{(m.message or '')[:60]}}...</td>
             <td style="font-family:monospace;font-size:.78rem">{{m.created_at[:10]}}</td>
-            <td><div class="td-actions">
+            <td><div class="td-actions" onclick="event.stopPropagation()">
               {% if not m.is_read %}<button class="action-btn edit read-msg-btn" data-id="{{m.id}}" title="Mark read"><i class="fas fa-check"></i></button>{% endif %}
               <button class="action-btn delete delete-msg-btn" data-id="{{m.id}}"><i class="fas fa-trash"></i></button>
             </div></td>
-          </tr>{% endfor %}
+          </tr>
+          {% endfor %}
         </tbody></table></div>
       </div>
     </div>
@@ -244,7 +259,10 @@
         <div class="admin-card-title"><i class="fas fa-user-circle"></i> Profile Settings</div>
         <form id="settings-form">
           <div class="form-grid">
-            <div class="form-group"><label>Full Name</label><input type="text" name="name" class="form-control" value="{{s.get('name','')}}"/></div>
+            <div class="form-group"><label>Full Name (shown across the site)</label><input type="text" name="site_name" class="form-control" value="{{s.get('site_name',s.get('name',''))}}"/></div>
+            <div class="form-group"><label>Nav Logo Text <small style="color:var(--text-muted);font-weight:400">(top-left, e.g. H.Khandhar)</small></label><input type="text" name="nav_logo" class="form-control" value="{{s.get('nav_logo','H.Khandhar')}}" placeholder="H.Khandhar"/></div>
+            <div class="form-group"><label>Footer Display Name</label><input type="text" name="footer_name" class="form-control" value="{{s.get('footer_name',s.get('site_name',s.get('name','')))}}" placeholder="Harshil Sandip Khandhar"/></div>
+            <div class="form-group"><label>Footer Copyright Text</label><input type="text" name="footer_copyright" class="form-control" value="{{s.get('footer_copyright','All rights reserved.')}}" placeholder="All rights reserved."/></div>
             <div class="form-group"><label>Tagline</label><input type="text" name="tagline" class="form-control" value="{{s.get('tagline','')}}"/></div>
             <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control" value="{{s.get('email','')}}"/></div>
             <div class="form-group"><label>Phone</label><input type="text" name="phone" class="form-control" value="{{s.get('phone','')}}"/></div>
@@ -316,7 +334,10 @@
           ("section_testimonials","Testimonials","fa-star"),
           ("section_gallery","Gallery","fa-images"),
           ("section_resume","Resume / CV","fa-file-alt"),
-          ("section_contact","Contact","fa-envelope")
+          ("section_contact","Contact","fa-envelope"),
+          ("section_blog","Blog","fa-newspaper"),
+          ("section_services","Services","fa-concierge-bell"),
+          ("section_achievements","Achievements","fa-trophy")
         ] %}
         {% for key,label,icon in section_list %}
         {% set is_on = s.get(key,'1')=='1' %}
@@ -357,6 +378,10 @@
               <option {% if s.get('font_body')==f %}selected{% endif %}>{{f}}</option>{% endfor %}
             </select>
           </div>
+          <div class="form-group" style="margin-top:20px">
+            <label><i class="fas fa-code" style="margin-right:6px;color:var(--secondary)"></i>Custom CSS (injected into all pages)</label>
+            <textarea name="custom_css" class="form-control" rows="8" style="font-family:monospace;font-size:.85rem" placeholder="/* Add your custom styles here */&#10;.my-class { color: red; }">{{s.get('custom_css','')|e}}</textarea>
+          </div>
           <button type="button" class="btn btn-primary" onclick="saveTheme()"><i class="fas fa-save"></i> Save Theme</button>
         </form>
       </div>
@@ -380,7 +405,9 @@
             <textarea id="custom_html_body" name="custom_html_body" class="form-control" rows="8" style="font-family:monospace;font-size:.85rem" placeholder="<!-- e.g. Tawk.to chat, custom JS widget -->&#10;<div id=&quot;my-widget&quot;>...</div>">{{s.get('custom_html_body','')|e}}</textarea>
           </div>
           <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save & Inject HTML</button>
-          <button type="button" class="btn btn-secondary" style="margin-left:10px" onclick="document.getElementById('custom_html_head').value='';document.getElementById('custom_html_body').value=''"><i class="fas fa-times"></i> Clear Both</button>
+          <button type="button" class="btn btn-secondary" style="margin-left:10px" onclick="clearCustomHtml('head')"><i class="fas fa-times"></i> Clear Head</button>
+          <button type="button" class="btn btn-secondary" style="margin-left:10px" onclick="clearCustomHtml('body')"><i class="fas fa-times"></i> Clear Body</button>
+          <button type="button" class="btn btn-danger" style="margin-left:10px" onclick="clearCustomHtml('both')"><i class="fas fa-trash"></i> Clear Both</button>
         </form>
       </div>
     </div>
@@ -428,6 +455,249 @@
           <div class="form-group"><label>Confirm Password</label><input type="password" id="confirm-password" class="form-control" minlength="6" required/></div>
           <button type="submit" class="btn btn-primary"><i class="fas fa-lock"></i> Update Password</button>
         </form>
+      </div>
+    </div>
+
+
+    <!-- ══ BLOG PANEL ══ -->
+    <div class="admin-panel" id="panel-blog">
+      <div class="admin-card">
+        <div class="admin-card-title" style="justify-content:space-between">
+          <span><i class="fas fa-newspaper"></i> Blog Posts</span>
+          <button class="btn btn-primary btn-sm" id="add-blog-btn"><i class="fas fa-plus"></i> New Post</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:16px"><i class="fas fa-info-circle" style="color:var(--secondary)"></i> Write rich stories with images. Content supports HTML formatting.</p>
+        <div class="table-wrap"><table><thead><tr><th>Cover</th><th>Title</th><th>Category</th><th>Status</th><th>Views</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+          {% for p in blog_posts %}
+          <tr>
+            <td>{% if p.cover_image %}<img src="/static/{{ p.cover_image }}" class="td-img"/>{% else %}<span style="color:var(--text-muted)">None</span>{% endif %}</td>
+            <td><strong>{{ p.title }}</strong></td>
+            <td>{{ p.category|title }}</td>
+            <td><span class="status-badge {% if p.status=='published' %}status-completed{% else %}status-planned{% endif %}">{{ p.status }}</span></td>
+            <td>{{ p.views }}</td>
+            <td style="font-family:monospace;font-size:.78rem">{{ p.created_at[:10] }}</td>
+            <td><div class="td-actions">
+              <a href="/blog/{{ p.slug }}" target="_blank" class="action-btn view"><i class="fas fa-eye"></i></a>
+              <button class="action-btn edit edit-blog-btn" data-id="{{ p.id }}"><i class="fas fa-edit"></i></button>
+              <button class="action-btn delete delete-blog-btn" data-id="{{ p.id }}"><i class="fas fa-trash"></i></button>
+            </div></td>
+          </tr>
+          {% endfor %}
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ══ SERVICES PANEL ══ -->
+    <div class="admin-panel" id="panel-services">
+      <div class="admin-card">
+        <div class="admin-card-title" style="justify-content:space-between">
+          <span><i class="fas fa-concierge-bell"></i> Services</span>
+          <button class="btn btn-primary btn-sm" id="add-service-btn"><i class="fas fa-plus"></i> Add Service</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Icon</th><th>Title</th><th>Price</th><th>Order</th><th>Actions</th></tr></thead><tbody>
+          {% for svc in services %}
+          <tr>
+            <td><i class="{{ svc.icon or 'fas fa-code' }}" style="font-size:1.2rem;color:var(--secondary)"></i></td>
+            <td><strong>{{ svc.title }}</strong></td>
+            <td>{{ svc.price or '—' }}</td>
+            <td>{{ svc.sort_order }}</td>
+            <td><div class="td-actions">
+              <button class="action-btn edit edit-service-btn" data-id="{{ svc.id }}"><i class="fas fa-edit"></i></button>
+              <button class="action-btn delete delete-service-btn" data-id="{{ svc.id }}"><i class="fas fa-trash"></i></button>
+            </div></td>
+          </tr>
+          {% endfor %}
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ══ ACHIEVEMENTS PANEL ══ -->
+    <div class="admin-panel" id="panel-achievements">
+      <div class="admin-card">
+        <div class="admin-card-title" style="justify-content:space-between">
+          <span><i class="fas fa-trophy"></i> Achievements / Stats</span>
+          <button class="btn btn-primary btn-sm" id="add-achievement-btn"><i class="fas fa-plus"></i> Add Achievement</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:16px">These appear in a dark banner section on the portfolio. Great for "500+ GitHub stars", "10k downloads", etc.</p>
+        <div class="table-wrap"><table><thead><tr><th>Icon</th><th>Title</th><th>Value</th><th>Color</th><th>Actions</th></tr></thead><tbody>
+          {% for a in achievements %}
+          <tr>
+            <td><i class="{{ a.icon }}" style="color:{{ a.color }};font-size:1.2rem"></i></td>
+            <td><strong>{{ a.title }}</strong></td>
+            <td style="font-family:monospace;font-weight:700;color:var(--secondary)">{{ a.value }}</td>
+            <td><div style="width:24px;height:24px;border-radius:50%;background:{{ a.color }};display:inline-block"></div></td>
+            <td><div class="td-actions">
+              <button class="action-btn edit edit-achievement-btn" data-id="{{ a.id }}"><i class="fas fa-edit"></i></button>
+              <button class="action-btn delete delete-achievement-btn" data-id="{{ a.id }}"><i class="fas fa-trash"></i></button>
+            </div></td>
+          </tr>
+          {% endfor %}
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ══ ANNOUNCEMENTS PANEL ══ -->
+    <div class="admin-panel" id="panel-announcements">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-bullhorn"></i> Site Announcement Bar</div>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:20px">A colored bar shown at the very top of your site. Only one can be active at a time.</p>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--bg);border-radius:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600">
+            <input type="checkbox" id="announcement-toggle" {% if s.get('announcement_enabled','0')=='1' %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--secondary)"/>
+            Show announcement bar to visitors
+          </label>
+        </div>
+        <form id="announcement-form">
+          <div class="form-grid">
+            <div class="form-group full"><label>Announcement Text *</label><input type="text" name="text" class="form-control" placeholder="🎉 New project launched! Check it out →" required/></div>
+            <div class="form-group"><label>Link URL (optional)</label><input type="url" name="link" class="form-control" placeholder="https://..."/></div>
+            <div class="form-group"><label>Link Label</label><input type="text" name="link_label" class="form-control" value="Learn more" placeholder="Learn more"/></div>
+            <div class="form-group"><label>Background Color</label><input type="color" name="bg_color" class="form-control" value="#1a73e8" style="height:42px"/></div>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> Set Announcement</button>
+        </form>
+        {% if announcements %}
+        <hr style="margin:24px 0;border:none;border-top:1px solid var(--border)"/>
+        <div class="table-wrap"><table><thead><tr><th>Text</th><th>Active</th><th>Actions</th></tr></thead><tbody>
+          {% for a in announcements %}<tr>
+            <td>{{ a.text[:60] }}...</td>
+            <td>{% if a.is_active %}<span class="status-badge status-completed">Active</span>{% else %}<span class="status-badge status-planned">Inactive</span>{% endif %}</td>
+            <td><button class="action-btn delete delete-announcement-btn" data-id="{{ a.id }}"><i class="fas fa-trash"></i></button></td>
+          </tr>{% endfor %}
+        </tbody></table></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ══ FAVICON PANEL ══ -->
+    <div class="admin-panel" id="panel-favicon">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-star"></i> Favicon</div>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:20px">The small icon shown in browser tabs. Upload a .ico, .png or .svg file (recommended: 32×32px or 64×64px).</p>
+        {% if s.get('favicon') %}
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--bg);border-radius:10px">
+          <img src="/static/{{ s.favicon }}" style="width:48px;height:48px;object-fit:contain;border-radius:8px;border:2px solid var(--border)"/>
+          <div><div style="font-weight:600;color:var(--text)">Current Favicon</div><div style="font-size:.8rem;color:var(--text-muted)">{{ s.favicon.rsplit('/',1)[-1] }}</div></div>
+        </div>
+        {% endif %}
+        <form id="favicon-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Upload Favicon (.ico, .png, .svg)</label>
+            <input type="file" name="favicon" class="form-control file-input-preview" accept=".ico,.png,.svg,.jpg" data-preview="favicon-preview" required/>
+            <img id="favicon-preview" class="upload-preview" style="width:64px;height:64px;object-fit:contain"/>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Upload Favicon</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══ SEO & ANALYTICS PANEL ══ -->
+    <div class="admin-panel" id="panel-seo">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-search"></i> SEO & Analytics</div>
+        <form id="seo-form">
+          <div class="form-grid">
+            <div class="form-group full"><label>SEO Keywords (comma-separated)</label><input type="text" name="seo_keywords" class="form-control" value="{{ s.get('seo_keywords','') }}" placeholder="developer, portfolio, AI, Flask"/></div>
+            <div class="form-group full"><label>OG Image URL (for social sharing preview)</label><input type="text" name="og_image" class="form-control" value="{{ s.get('og_image','') }}" placeholder="https://your-site.com/static/uploads/og.jpg"/></div>
+            <div class="form-group"><label>Google Analytics ID</label><input type="text" name="google_analytics_id" class="form-control" value="{{ s.get('google_analytics_id','') }}" placeholder="G-XXXXXXXXXX"/></div>
+            <div class="form-group"><label>Tawk.to Chat ID</label><input type="text" name="tawk_id" class="form-control" value="{{ s.get('tawk_id','') }}" placeholder="your-tawk-id"/></div>
+            <div class="form-group"><label>WhatsApp Number</label><input type="text" name="whatsapp" class="form-control" value="{{ s.get('whatsapp','') }}" placeholder="+919876543210"/></div>
+            <div class="form-group"><label>YouTube URL</label><input type="url" name="youtube" class="form-control" value="{{ s.get('youtube','') }}"/></div>
+            <div class="form-group"><label>Dribbble URL</label><input type="url" name="dribbble" class="form-control" value="{{ s.get('dribbble','') }}"/></div>
+            <div class="form-group"><label>Behance URL</label><input type="url" name="behance" class="form-control" value="{{ s.get('behance','') }}"/></div>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save SEO Settings</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══ MAINTENANCE PANEL ══ -->
+    <div class="admin-panel" id="panel-maintenance">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-tools"></i> Maintenance Mode</div>
+        <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px;margin-bottom:24px;font-size:.85rem;color:#dc2626">
+          <i class="fas fa-exclamation-triangle" style="margin-right:6px"></i><strong>Warning:</strong> Enabling maintenance mode will show a "Coming Back Soon" page to all visitors. You can still access /admin.
+        </div>
+        <form id="maintenance-form">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:10px">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:var(--text)">
+              <input type="checkbox" name="maintenance_mode" value="1" id="maintenance-toggle" {% if s.get('maintenance_mode','0')=='1' %}checked{% endif %} style="width:16px;height:16px;accent-color:#ef4444"/>
+              <span>Enable Maintenance Mode</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Maintenance Message</label>
+            <textarea name="maintenance_msg" class="form-control" rows="3">{{ s.get('maintenance_msg','Site under maintenance. Back soon!') }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- ══ CUSTOM LINKS ══ -->
+    <div class="admin-panel" id="panel-custom-links">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-link"></i> Custom Links</div>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:20px">Add extra links to your navbar, footer, or both. Great for connecting external pages, social profiles, or any URL.</p>
+        <form id="custom-link-form">
+          <div class="form-grid">
+            <div class="form-group"><label>Label *</label><input type="text" name="label" class="form-control" placeholder="My Behance" required/></div>
+            <div class="form-group"><label>URL *</label><input type="url" name="url" class="form-control" placeholder="https://behance.net/..." required/></div>
+            <div class="form-group"><label>FontAwesome Icon</label><input type="text" name="icon" class="form-control" value="fas fa-link" placeholder="fab fa-behance"/></div>
+            <div class="form-group"><label>Show In</label>
+              <select name="location" class="form-control">
+                <option value="navbar">Navigation Bar</option>
+                <option value="footer">Footer</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Open In</label>
+              <select name="open_new_tab" class="form-control">
+                <option value="1">New Tab</option>
+                <option value="0">Same Tab</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Sort Order</label><input type="number" name="sort_order" class="form-control" value="0"/></div>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Link</button>
+        </form>
+        <hr style="margin:24px 0;border:none;border-top:1px solid var(--border)"/>
+        <div class="table-wrap"><table><thead><tr><th>Icon</th><th>Label</th><th>URL</th><th>Location</th><th>Actions</th></tr></thead><tbody>
+          {% for lnk in custom_links %}
+          <tr>
+            <td><i class="{{ lnk.icon or 'fas fa-link' }}" style="color:var(--secondary)"></i></td>
+            <td><strong>{{ lnk.label }}</strong></td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><a href="{{ lnk.url }}" target="_blank" style="color:var(--secondary)">{{ lnk.url }}</a></td>
+            <td>{{ lnk.location|title }}</td>
+            <td><button class="action-btn delete delete-custom-link-btn" data-id="{{ lnk.id }}"><i class="fas fa-trash"></i></button></td>
+          </tr>
+          {% endfor %}
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ══ SITE USERS ══ -->
+    <div class="admin-panel" id="panel-site-users">
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="fas fa-users"></i> Site Users</div>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:20px">Visitors who have registered on your site. Enable/disable registration below.</p>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--bg);border-radius:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600">
+            <input type="checkbox" id="registration-toggle" {% if s.get('users_can_register','0')=='1' %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--secondary)"/>
+            Allow visitors to register and sign in
+          </label>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead><tbody>
+          {% for u in site_users %}
+          <tr>
+            <td><strong>{{ u.name }}</strong></td>
+            <td>{{ u.email }}</td>
+            <td style="font-family:monospace;font-size:.78rem">{{ u.created_at[:10] }}</td>
+          </tr>
+          {% endfor %}
+          {% if not site_users %}<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:24px">No registered users yet.</td></tr>{% endif %}
+        </tbody></table></div>
       </div>
     </div>
 
@@ -560,7 +830,111 @@
   </div>
 </div>
 
+
+<!-- ══ MESSAGE DETAIL MODAL ══ -->
+<div class="modal-overlay" id="msg-detail-modal">
+  <div class="admin-modal" style="max-width:560px">
+    <div class="modal-header"><h3><i class="fas fa-envelope" style="margin-right:8px;color:var(--secondary)"></i>Message Details</h3><button class="modal-close"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div id="msg-detail-content"></div>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
+
+<!-- ══ BLOG POST MODAL ══ -->
+<div class="modal-overlay" id="blog-modal" style="z-index:600">
+  <div class="admin-modal" style="max-width:900px">
+    <div class="modal-header"><h3 id="blog-modal-title">New Blog Post</h3><button class="modal-close"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="blog-id"/>
+      <form id="blog-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group full"><label>Title *</label><input type="text" name="title" class="form-control" required placeholder="My Story About Building with Flask"/></div>
+          <div class="form-group"><label>Category</label>
+            <select name="category" class="form-control">
+              <option value="general">General</option>
+              <option value="tutorial">Tutorial</option>
+              <option value="story">Story</option>
+              <option value="tech">Tech</option>
+              <option value="life">Life</option>
+              <option value="project">Project</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Status</label>
+            <select name="status" class="form-control">
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Tags (comma-separated)</label><input type="text" name="tags" class="form-control" placeholder="flask, python, webdev"/></div>
+          <div class="form-group"><label>Cover Image</label><input type="file" name="cover_image" class="form-control" accept="image/*"/></div>
+          <div class="form-group full"><label>Excerpt (short summary shown on blog listing)</label><textarea name="excerpt" class="form-control" rows="2" placeholder="A brief description of this post..."></textarea></div>
+          <div class="form-group full">
+            <label>Content <small style="color:var(--text-muted);font-weight:400">(supports HTML — use &lt;h2&gt;, &lt;p&gt;, &lt;img&gt;, &lt;blockquote&gt;, &lt;code&gt;, &lt;pre&gt;, &lt;ul&gt;, &lt;a&gt;, &lt;strong&gt;, &lt;hr&gt;)</small></label>
+            <div style="margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<h2>','</h2>')">H2</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<h3>','</h3>')">H3</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<p>','</p>')">P</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<strong>','</strong>')"><b>B</b></button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<em>','</em>')"><i>I</i></button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<blockquote>','</blockquote>')">Quote</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<code>','</code>')">Code</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<pre><code>','</code></pre>')">Block</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<ul>\n<li>','</li>\n</ul>')">List</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('blog-content','<hr>','')">HR</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertImg()"><i class="fas fa-image"></i> Image</button>
+            </div>
+            <textarea id="blog-content" name="content" class="form-control" rows="18" style="font-family:monospace;font-size:.85rem;resize:vertical" placeholder="<h2>Introduction</h2>&#10;<p>Write your story here...</p>&#10;&#10;<h2>Main Content</h2>&#10;<p>More details...</p>"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Post</button>
+          <button type="button" class="btn btn-secondary" id="preview-blog-btn"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SERVICE MODAL ══ -->
+<div class="modal-overlay" id="service-modal">
+  <div class="admin-modal" style="max-width:520px">
+    <div class="modal-header"><h3>Service</h3><button class="modal-close"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="service-id"/>
+      <form id="service-form">
+        <div class="form-group"><label>Title *</label><input type="text" name="title" class="form-control" required placeholder="Web Development"/></div>
+        <div class="form-group"><label>Description</label><textarea name="description" class="form-control" rows="3" placeholder="Professional web development services..."></textarea></div>
+        <div class="form-group"><label>FontAwesome Icon</label><input type="text" name="icon" class="form-control" value="fas fa-code" placeholder="fas fa-code"/></div>
+        <div class="form-group"><label>Price (optional)</label><input type="text" name="price" class="form-control" placeholder="Starting $500"/></div>
+        <div class="form-group"><label>Features (pipe-separated)</label><input type="text" name="features" class="form-control" placeholder="Responsive design|SEO optimized|Fast loading"/></div>
+        <div class="form-group"><label>Sort Order</label><input type="number" name="sort_order" class="form-control" value="0"/></div>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACHIEVEMENT MODAL ══ -->
+<div class="modal-overlay" id="achievement-modal">
+  <div class="admin-modal" style="max-width:440px">
+    <div class="modal-header"><h3>Achievement / Stat</h3><button class="modal-close"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="achievement-id"/>
+      <form id="achievement-form">
+        <div class="form-group"><label>Title *</label><input type="text" name="title" class="form-control" required placeholder="GitHub Stars"/></div>
+        <div class="form-group"><label>Value *</label><input type="text" name="value" class="form-control" required placeholder="500+"/></div>
+        <div class="form-group"><label>FontAwesome Icon</label><input type="text" name="icon" class="form-control" value="fas fa-star" placeholder="fas fa-star"/></div>
+        <div class="form-group"><label>Color</label><input type="color" name="color" class="form-control" value="#00d4ff" style="height:42px"/></div>
+        <div class="form-group"><label>Sort Order</label><input type="number" name="sort_order" class="form-control" value="0"/></div>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>window.analyticsData = {{ analytics | tojson }};</script>
 <script src="/static/js/admin.js"></script>
 

@@ -5,15 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{{ s.get('name','Harshil Sandip Khandhar') }} – Portfolio</title>
   <meta name="description" content="{{ s.get('bio','Professional Portfolio') }}"/>
-  <meta name="keywords" content="portfolio, developer, AI, web development, {{ s.get('name','') }}"/>
-  <meta property="og:title" content="{{ s.get('name','') }}"/>
+  <meta name="keywords" content="{{ s.get('seo_keywords','portfolio, developer, AI, web development') }}, {{ s.get('name','') }}"/>
+  <meta name="author" content="{{ s.get('name','') }}"/>
+  <meta name="robots" content="index, follow"/>
+  <meta property="og:title" content="{{ s.get('name','') }} – Portfolio"/>
   <meta property="og:description" content="{{ s.get('bio','') }}"/>
+  <meta property="og:type" content="website"/>
+  {% if s.get('og_image') %}<meta property="og:image" content="{{ s.og_image }}"/>{% elif s.get('profile_photo') %}<meta property="og:image" content="/static/{{ s.profile_photo }}"/>{% endif %}
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="{{ s.get('name','') }}"/>
+  <meta name="twitter:description" content="{{ s.get('bio','') }}"/>
   <meta name="theme-color" content="{{ s.get('primary_color','#0a2540') }}"/>
   <link rel="manifest" href="/static/manifest.json"/>
+  {% if s.get('show_scroll_progress','1')=='1' %}<div id="scroll-progress"></div>{% endif %}
+{% if s.get('favicon') %}<link rel="icon" href="/static/{{ s.favicon }}" type="image/x-icon"/>{% endif %}
+  {% if s.get('google_analytics_id') %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ s.google_analytics_id }}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ s.google_analytics_id }}');</script>
+  {% endif %}
+  {% if s.get('tawk_id') %}
+  <script>var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date();(function(){var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];s1.async=true;s1.src='https://embed.tawk.to/{{ s.tawk_id }}/default';s1.charset='UTF-8';s1.setAttribute('crossorigin','*');s0.parentNode.insertBefore(s1,s0);})();</script>
+  {% endif %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/static/css/main.css"/>
   <!-- Custom head HTML injected by admin -->
   {% if s.get('custom_html_head') %}{{ s.custom_html_head | safe }}{% endif %}
+  {% if s.get('custom_css') %}<style>{{ s.custom_css | safe }}</style>{% endif %}
   <style>
     :root {
       --primary: {{ s.get('primary_color','#0a2540') }};
@@ -22,9 +39,24 @@
     }
     .nav-links a.active-nav { color: var(--accent); }
     .nav-links a.active-nav::after { width: 100%; }
+    /* Scroll progress */
+    #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--secondary),var(--accent));z-index:9999;transition:width .1s linear}
+
   </style>
 </head>
 <body>
+
+{% if s.get('show_scroll_progress','1')=='1' %}<div id="scroll-progress"></div>{% endif %}
+{% if s.get('favicon') %}<link rel="icon" href="/static/{{ s.favicon }}" type="image/x-icon"/>{% endif %}
+
+<!-- ── Announcement Bar ── -->
+{% if announcement and s.get('announcement_enabled','0')=='1' %}
+<div id="announcement-bar" style="background:{{ announcement.bg_color or '#1a73e8' }};color:#fff;text-align:center;padding:10px 5%;font-size:.875rem;font-weight:500;position:relative;z-index:1001">
+  {{ announcement.text }}
+  {% if announcement.link %}<a href="{{ announcement.link }}" style="color:#fff;font-weight:700;margin-left:12px;text-decoration:underline">{{ announcement.link_label or 'Learn more' }} →</a>{% endif %}
+  <button onclick="document.getElementById('announcement-bar').remove()" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.2);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.8rem">✕</button>
+</div>
+{% endif %}
 
 <!-- ── Loading Screen ── -->
 <div id="loading-screen">
@@ -34,7 +66,7 @@
 
 <!-- ── Navigation ── -->
 <nav id="main-nav">
-  <a href="#hero" class="nav-logo">{{ s.get('name','H').split()[0][0] }}<span>.</span>{{ s.get('name','Khandhar').split()[-1] }}</a>
+  <a href="#hero" class="nav-logo">{{ s.get('nav_logo','H.Khandhar') | replace('.','.<span>') | safe }}</span></a>
   <div class="nav-links">
     {% if s.get('section_about','1')=='1' %}<a href="#about" class="nav-link">About</a>{% endif %}
     {% if s.get('section_skills','1')=='1' %}<a href="#skills" class="nav-link">Skills</a>{% endif %}
@@ -42,6 +74,7 @@
     {% if s.get('section_experience','1')=='1' %}<a href="#experience" class="nav-link">Experience</a>{% endif %}
     {% if s.get('section_certifications','1')=='1' %}<a href="#certifications" class="nav-link">Certifications</a>{% endif %}
     {% if s.get('section_gallery','1')=='1' %}<a href="#gallery" class="nav-link">Gallery</a>{% endif %}
+    {% if s.get('section_blog','1')=='1' %}<a href="/blog" class="nav-link">Blog</a>{% endif %}
     {% if s.get('section_contact','1')=='1' %}<a href="#contact" class="nav-link">Contact</a>{% endif %}
   </div>
   <div class="nav-actions">
@@ -65,8 +98,7 @@
   <div class="hero-grid"></div>
   <div class="hero-container">
     <div class="hero-content">
-      <div class="hero-badge">Available for opportunities</div>
-      <h1 class="hero-name">
+<h1 class="hero-name">
         {{ s.get('name','Harshil Sandip Khandhar').split()[0] }}<br>
         <span class="accent">{{ ' '.join(s.get('name','Harshil Sandip Khandhar').split()[1:]) }}</span>
       </h1>
@@ -401,6 +433,87 @@
 </section>
 {% endif %}
 
+<!-- ══ ACHIEVEMENTS ══ -->
+{% if s.get('section_achievements','1')=='1' and achievements %}
+<section id="achievements" style="background:var(--primary);padding:80px 5%">
+  <div class="section-header reveal" style="margin-bottom:48px">
+    <div class="section-tag" style="color:rgba(255,255,255,.6)">Achievements</div>
+    <h2 class="section-title" style="color:#fff">Numbers That Matter</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:1200px;margin:0 auto" class="container">
+    {% for ach in achievements %}
+    <div class="reveal" style="text-align:center;animation-delay:{{ loop.index0*0.1 }}s">
+      <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.4rem;color:{{ ach.color or '#00d4ff' }}"><i class="{{ ach.icon or 'fas fa-trophy' }}"></i></div>
+      <div style="font-family:var(--font-heading),serif;font-size:2.5rem;font-weight:900;color:{{ ach.color or '#00d4ff' }};line-height:1">{{ ach.value or '0' }}</div>
+      <div style="color:rgba(255,255,255,.65);font-size:.875rem;margin-top:8px">{{ ach.title }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ SERVICES ══ -->
+{% if s.get('section_services','1')=='1' and services %}
+<section id="services">
+  <div class="section-header reveal">
+    <div class="section-tag">Services</div>
+    <h2 class="section-title">What I Offer</h2>
+    <p class="section-subtitle">Professional services tailored to bring your ideas to life.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:1200px;margin:0 auto" class="container">
+    {% for svc in services %}
+    <div class="reveal" style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;transition:all .3s;animation-delay:{{ loop.index0*0.1 }}s" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.5rem;color:#fff"><i class="{{ svc.icon or 'fas fa-code' }}"></i></div>
+      <h3 style="font-family:var(--font-heading),serif;font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:12px">{{ svc.title }}</h3>
+      {% if svc.price %}<div style="color:var(--secondary);font-weight:700;font-size:1.1rem;margin-bottom:12px">{{ svc.price }}</div>{% endif %}
+      <p style="color:var(--text-muted);font-size:.875rem;line-height:1.7;margin-bottom:16px">{{ svc.description or '' }}</p>
+      {% if svc.features %}
+      <div style="text-align:left">
+        {% for feat in svc.features.split('|') %}{% if feat.strip() %}
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:.82rem;color:var(--text-muted)"><span style="color:var(--accent);flex-shrink:0;margin-top:2px">✓</span>{{ feat.strip() }}</div>
+        {% endif %}{% endfor %}
+      </div>
+      {% endif %}
+      {% if s.get('section_contact','1')=='1' %}<a href="#contact" style="display:inline-flex;align-items:center;gap:6px;margin-top:20px;color:var(--secondary);font-weight:600;font-size:.875rem">Get Started <i class="fas fa-arrow-right"></i></a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ BLOG PREVIEW ══ -->
+{% if s.get('section_blog','1')=='1' and blog_posts %}
+<section id="blog">
+  <div class="section-header reveal">
+    <div class="section-tag">Blog</div>
+    <h2 class="section-title">Latest Stories</h2>
+    <p class="section-subtitle">Thoughts, tutorials and insights from my developer journey.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:1200px;margin:0 auto" class="container">
+    {% for post in blog_posts[:3] %}
+    <a href="/blog/{{ post.slug }}" style="text-decoration:none;color:inherit;display:block;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .3s" class="reveal" style="animation-delay:{{ loop.index0*0.1 }}s" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <div style="aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,var(--primary),#1a3a5c)">
+        {% if post.cover_image %}<img src="/static/{{ post.cover_image }}" alt="{{ post.title }}" style="width:100%;height:100%;object-fit:cover" loading="lazy"/>
+        {% else %}<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,.2)"><i class="fas fa-newspaper"></i></div>{% endif %}
+      </div>
+      <div style="padding:24px">
+        <div style="display:inline-block;background:rgba(26,115,232,.1);color:var(--secondary);padding:3px 12px;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">{{ post.category|title }}</div>
+        <div style="font-family:var(--font-heading),serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.4">{{ post.title }}</div>
+        <div style="color:var(--text-muted);font-size:.875rem;line-height:1.7;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ post.excerpt or (post.content or '')[:120] }}</div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:.78rem;color:var(--text-muted)">
+          <span><i class="fas fa-calendar" style="margin-right:4px"></i>{{ post.created_at[:10] }}</span>
+          <span><i class="fas fa-clock" style="margin-right:4px"></i>{{ post.read_time }} min</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <div style="text-align:center;margin-top:48px">
+    <a href="/blog" class="btn-primary"><i class="fas fa-newspaper"></i> View All Posts</a>
+  </div>
+</section>
+{% endif %}
+
 <!-- ══ CONTACT ══ -->
 {% if s.get('section_contact','1')=='1' %}
 <section id="contact">
@@ -439,13 +552,16 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="footer-logo">{{ s.get('name','H').split()[0][0] }}<span>.</span>{{ s.get('name','Khandhar').split()[-1] }}</div>
+      <div class="footer-logo">{{ s.get('nav_logo','H.Khandhar') }}</div>
       <p class="footer-desc">{{ s.get('bio','') }}</p>
       <div class="footer-socials">
         {% if s.get('github') %}<a href="{{ s.github }}" class="footer-social" target="_blank"><i class="fab fa-github"></i></a>{% endif %}
         {% if s.get('linkedin') %}<a href="{{ s.linkedin }}" class="footer-social" target="_blank"><i class="fab fa-linkedin-in"></i></a>{% endif %}
         {% if s.get('twitter') %}<a href="{{ s.twitter }}" class="footer-social" target="_blank"><i class="fab fa-twitter"></i></a>{% endif %}
         {% if s.get('instagram') %}<a href="{{ s.instagram }}" class="footer-social" target="_blank"><i class="fab fa-instagram"></i></a>{% endif %}
+        {% if s.get('youtube') %}<a href="{{ s.youtube }}" class="footer-social" target="_blank"><i class="fab fa-youtube"></i></a>{% endif %}
+        {% if s.get('dribbble') %}<a href="{{ s.dribbble }}" class="footer-social" target="_blank"><i class="fab fa-dribbble"></i></a>{% endif %}
+        {% if s.get('behance') %}<a href="{{ s.behance }}" class="footer-social" target="_blank"><i class="fab fa-behance"></i></a>{% endif %}
       </div>
     </div>
     <div>
@@ -469,7 +585,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">© 2024 <span id="footer-trigger">{{ s.get('name','Harshil Sandip Khandhar') }}</span>. All rights reserved.</p>
+    <p class="footer-copy"><span id="footer-trigger">{{ s.get('footer_name', s.get('name','Harshil Sandip Khandhar')) }}</span> · {{ s.get('footer_copyright','All rights reserved.') }}</p>
   </div>
 </footer>
 
@@ -562,6 +678,16 @@
   </div>
 </div>
 
+<!-- ── WhatsApp Float ── -->
+{% if s.get('whatsapp') %}
+<a href="https://wa.me/{{ s.whatsapp|replace('+','') }}" target="_blank"
+   style="position:fixed;bottom:90px;right:32px;z-index:800;width:54px;height:54px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 20px rgba(37,211,102,.5);transition:transform .3s"
+   onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
+   title="Chat on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+{% endif %}
+
 <!-- ══ ADMIN LOGIN MODAL ══ -->
 <div class="modal-overlay" id="admin-login-modal">
   <div class="admin-login-box">
@@ -612,6 +738,21 @@ document.getElementById('sell-inquiry-form')?.addEventListener('submit', async (
     msg.style.cssText = 'display:block;color:#ef4444;background:rgba(239,68,68,.1);padding:10px;border-radius:8px';
   }
   btn.disabled = false; btn.textContent = 'Send Purchase Inquiry';
+});
+</script>
+<script>
+// Scroll progress bar
+const _sp = document.getElementById('scroll-progress');
+if (_sp) window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  _sp.style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+}, {passive:true});
+// Disable right-click (light deterrent — not a hard block)
+document.addEventListener('contextmenu', e => e.preventDefault());
+// Disable view-source keyboard shortcut (Ctrl+U / Cmd+U)
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && (e.key==='u'||e.key==='U'||e.key==='s'||e.key==='S')) e.preventDefault();
+  if (e.key==='F12') e.preventDefault();
 });
 </script>
 <!-- Custom body HTML injected by admin -->

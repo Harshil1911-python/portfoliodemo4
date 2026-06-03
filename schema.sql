@@ -128,3 +128,88 @@ CREATE TABLE IF NOT EXISTS project_views (
     viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(project_id) REFERENCES projects(id)
 );
+
+-- Blog posts
+CREATE TABLE IF NOT EXISTS blog_posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE,
+    excerpt TEXT,
+    content TEXT,
+    cover_image TEXT,
+    category TEXT DEFAULT 'general',
+    tags TEXT,
+    status TEXT DEFAULT 'published',
+    views INTEGER DEFAULT 0,
+    read_time INTEGER DEFAULT 5,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Blog images (for rich content)
+CREATE TABLE IF NOT EXISTS blog_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER,
+    image_path TEXT,
+    caption TEXT,
+    FOREIGN KEY(post_id) REFERENCES blog_posts(id) ON DELETE CASCADE
+);
+
+-- Announcements / notice bar
+CREATE TABLE IF NOT EXISTS announcements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    link TEXT,
+    link_label TEXT,
+    bg_color TEXT DEFAULT '#1a73e8',
+    is_active INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Services / offerings
+CREATE TABLE IF NOT EXISTS services (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    icon TEXT DEFAULT 'fas fa-code',
+    price TEXT,
+    features TEXT,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Social proof / stats
+CREATE TABLE IF NOT EXISTS achievements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    value TEXT,
+    icon TEXT DEFAULT 'fas fa-trophy',
+    color TEXT DEFAULT '#1a73e8',
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Site users (optional sign-in)
+CREATE TABLE IF NOT EXISTS site_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    avatar TEXT DEFAULT '',
+    bio TEXT DEFAULT '',
+    is_verified INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Custom links (navbar/footer/sidebar extra links)
+CREATE TABLE IF NOT EXISTS custom_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    label TEXT NOT NULL,
+    url TEXT NOT NULL,
+    icon TEXT DEFAULT 'fas fa-link',
+    location TEXT DEFAULT 'navbar',
+    open_new_tab INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

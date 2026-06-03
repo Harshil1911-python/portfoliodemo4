@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{{ post.title }} – {{ s.get('name','Portfolio') }}</title>
+  <meta name="description" content="{{ post.excerpt or (post.content or '')[:160] }}"/>
+  <meta property="og:title" content="{{ post.title }}"/>
+  <meta property="og:description" content="{{ post.excerpt or '' }}"/>
+  {% if post.cover_image %}<meta property="og:image" content="/static/{{ post.cover_image }}"/>{% endif %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+  {% if s.get('favicon') %}<link rel="icon" href="/static/{{ s.favicon }}"/>{% endif %}
+  {% if s.get('custom_html_head') %}{{ s.custom_html_head | safe }}{% endif %}
+  <style>
+    :root{--primary:{{ s.get('primary_color','#0a2540') }};--secondary:{{ s.get('secondary_color','#1a73e8') }};--accent:{{ s.get('accent_color','#00d4ff') }};}
+    .post-hero{background:linear-gradient(135deg,var(--primary),#1a3a5c);padding:120px 5% 0;color:#fff;text-align:center}
+    .post-hero-inner{max-width:800px;margin:0 auto}
+    .post-cat{display:inline-block;background:rgba(0,212,255,.15);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px}
+    .post-title{font-family:var(--font-heading,'Playfair Display'),serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.15;margin-bottom:20px}
+    .post-meta{display:flex;align-items:center;justify-content:center;gap:20px;font-size:.85rem;color:rgba(255,255,255,.65);flex-wrap:wrap;padding-bottom:48px}
+    .post-cover{max-width:900px;margin:-1px auto 0;border-radius:16px 16px 0 0;overflow:hidden;position:relative;z-index:1}
+    .post-cover img{width:100%;display:block;max-height:480px;object-fit:cover}
+    .post-body{max-width:800px;margin:0 auto;padding:60px 5% 80px}
+    .post-content{font-size:1.05rem;line-height:1.9;color:var(--text,#1a1a2e)}
+    .post-content h1,.post-content h2,.post-content h3{font-family:var(--font-heading,'Playfair Display'),serif;font-weight:700;color:var(--text,#1a1a2e);margin:2em 0 .75em;line-height:1.3}
+    .post-content h2{font-size:1.8rem}.post-content h3{font-size:1.4rem}
+    .post-content p{margin-bottom:1.5em}
+    .post-content a{color:var(--secondary,#1a73e8);text-decoration:underline}
+    .post-content img{max-width:100%;border-radius:12px;margin:2em 0;display:block}
+    .post-content blockquote{border-left:4px solid var(--accent,#00d4ff);padding:16px 24px;background:rgba(0,212,255,.05);border-radius:0 12px 12px 0;margin:2em 0;font-style:italic;color:var(--text-muted,#6b7280)}
+    .post-content code{background:var(--bg2,#f8faff);color:var(--secondary,#1a73e8);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.875em}
+    .post-content pre{background:var(--primary,#0a2540);color:#e8edf5;padding:24px;border-radius:12px;overflow-x:auto;margin:2em 0}
+    .post-content pre code{background:none;color:inherit;padding:0}
+    .post-content ul,.post-content ol{margin:1em 0 1.5em 2em}
+    .post-content li{margin-bottom:.5em}
+    .post-content hr{border:none;border-top:1px solid var(--border,rgba(0,0,0,.08));margin:3em 0}
+    .post-tags{display:flex;gap:8px;flex-wrap:wrap;margin:32px 0 0}
+    .post-tag{background:var(--bg2,#f8faff);color:var(--text-muted,#6b7280);padding:4px 14px;border-radius:99px;font-size:.78rem;font-weight:600}
+    .post-share{display:flex;align-items:center;gap:12px;margin-top:40px;padding-top:32px;border-top:1px solid var(--border,rgba(0,0,0,.08))}
+    .share-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:99px;font-size:.82rem;font-weight:600;transition:all .2s;text-decoration:none}
+    .share-tw{background:#1da1f2;color:#fff}.share-li{background:#0077b5;color:#fff}.share-wa{background:#25d366;color:#fff}
+    .share-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+    .related-section{background:var(--bg2,#f8faff);padding:60px 5%}
+    .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1000px;margin:32px auto 0}
+    .related-card{background:var(--card-bg,#fff);border-radius:12px;padding:20px;border:1px solid var(--border,rgba(0,0,0,.08));text-decoration:none;display:block;color:inherit;transition:all .2s}
+    .related-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.1)}
+    .related-title{font-weight:700;font-size:.9rem;color:var(--text,#1a1a2e);margin-bottom:8px;line-height:1.4}
+    .related-meta{font-size:.75rem;color:var(--text-muted,#6b7280)}
+    @media(max-width:700px){.related-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav id="main-nav" class="scrolled" style="background:var(--primary)">
+  <a href="/" class="nav-logo">{{ s.get('name','H').split()[0][0] }}<span style="color:var(--accent)">.</span>{{ s.get('name','K').split()[-1] }}</a>
+  <div class="nav-links">
+    <a href="/" style="color:rgba(255,255,255,.8)">Home</a>
+    <a href="/blog" style="color:rgba(255,255,255,.8)">Blog</a>
+  </div>
+  <div class="nav-actions"><button id="theme-toggle" class="btn-theme-toggle">🌙</button></div>
+</nav>
+
+<div class="post-hero">
+  <div class="post-hero-inner">
+    <div class="post-cat">{{ post.category|title }}</div>
+    <h1 class="post-title">{{ post.title }}</h1>
+    <div class="post-meta">
+      <span><i class="fas fa-user" style="margin-right:6px"></i>{{ s.get('name','') }}</span>
+      <span><i class="fas fa-calendar" style="margin-right:6px"></i>{{ post.created_at[:10] }}</span>
+      <span><i class="fas fa-clock" style="margin-right:6px"></i>{{ post.read_time }} min read</span>
+      <span><i class="fas fa-eye" style="margin-right:6px"></i>{{ post.views }} views</span>
+    </div>
+  </div>
+  {% if post.cover_image %}
+  <div class="post-cover" style="max-width:900px;margin:0 auto">
+    <img src="/static/{{ post.cover_image }}" alt="{{ post.title }}"/>
+  </div>
+  {% endif %}
+</div>
+
+<div class="post-body">
+  <div class="post-content">
+    {{ post.content | safe }}
+  </div>
+  {% if post.tags %}
+  <div class="post-tags">
+    {% for tag in post.tags.split(',') %}{% if tag.strip() %}
+    <span class="post-tag"># {{ tag.strip() }}</span>
+    {% endif %}{% endfor %}
+  </div>
+  {% endif %}
+  <div class="post-share">
+    <strong style="color:var(--text);font-size:.875rem">Share:</strong>
+    <a href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}&url={{ request.url|urlencode }}" target="_blank" class="share-btn share-tw"><i class="fab fa-twitter"></i> Twitter</a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url|urlencode }}" target="_blank" class="share-btn share-li"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+    <a href="https://wa.me/?text={{ (post.title + ' ' + request.url)|urlencode }}" target="_blank" class="share-btn share-wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+  </div>
+</div>
+
+{% if related %}
+<div class="related-section">
+  <div style="max-width:1000px;margin:0 auto">
+    <h3 style="font-family:var(--font-heading,'Playfair Display'),serif;font-size:1.5rem;font-weight:700;color:var(--text)">Related Posts</h3>
+    <div class="related-grid">
+      {% for r in related %}
+      <a href="/blog/{{ r.slug }}" class="related-card">
+        <div class="related-title">{{ r.title }}</div>
+        <div class="related-meta"><i class="fas fa-calendar" style="margin-right:4px"></i>{{ r.created_at[:10] }} · {{ r.read_time }} min read</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<footer style="background:var(--primary);color:#fff;padding:40px 5%;text-align:center">
+  <p style="color:rgba(255,255,255,.5);font-size:.85rem">© 2024 {{ s.get('name','') }}. · <a href="/" style="color:var(--accent)">Portfolio</a> · <a href="/blog" style="color:var(--accent)">Blog</a></p>
+</footer>
+<button id="back-to-top" title="Back to top"><i class="fas fa-arrow-up"></i></button>
+<script>
+const nav=document.getElementById('main-nav');
+window.addEventListener('scroll',()=>{nav?.classList.toggle('scrolled',window.scrollY>60);document.getElementById('back-to-top')?.classList.toggle('visible',window.scrollY>400)},{passive:true});
+document.getElementById('back-to-top')?.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+let isDark=localStorage.getItem('theme')==='dark';
+function applyTheme(){document.documentElement.setAttribute('data-theme',isDark?'dark':'light');const t=document.getElementById('theme-toggle');if(t)t.innerHTML=isDark?'☀️':'🌙';localStorage.setItem('theme',isDark?'dark':'light');}
+applyTheme();
+document.getElementById('theme-toggle')?.addEventListener('click',()=>{isDark=!isDark;applyTheme();});
+// Estimated read progress bar
+const bar=document.createElement('div');
+bar.style.cssText='position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--secondary),var(--accent));z-index:9999;transition:width .1s';
+document.body.prepend(bar);
+window.addEventListener('scroll',()=>{const d=document.documentElement;const p=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;bar.style.width=p+'%';},{passive:true});
+</script>
+{% if s.get('custom_html_body') %}{{ s.custom_html_body | safe }}{% endif %}
+</body>
+</html>

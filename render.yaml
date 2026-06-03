@@ -10,7 +10,7 @@ services:
       - key: FLASK_ENV
         value: production
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: "3.11.0"
     disk:
       name: portfolio-uploads
       mountPath: /opt/render/project/src/static/uploads

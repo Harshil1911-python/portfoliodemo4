@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Under Maintenance</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap"/>
+  {% if s.get('favicon') %}<link rel="icon" href="/static/{{ s.favicon }}"/>{% endif %}
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:#0a2540;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+    .icon{font-size:5rem;margin-bottom:24px;animation:float 3s ease infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    h1{font-family:'Playfair Display',serif;font-size:2.5rem;color:#fff;margin-bottom:16px}
+    p{color:rgba(255,255,255,.65);font-size:1.05rem;max-width:400px;margin:0 auto 32px;line-height:1.7}
+    .spinner{width:40px;height:40px;border:3px solid rgba(0,212,255,.2);border-top-color:#00d4ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div>
+    <div class="icon">🔧</div>
+    <h1>Under Maintenance</h1>
+    <p>{{ msg }}</p>
+    <div class="spinner"></div>
+  </div>
+</body>
+</html>

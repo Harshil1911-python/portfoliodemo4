@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en" data-theme="light">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Login – {{ s.get('name','Portfolio') }}</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="/static/css/main.css"/>
+{% if s.get('favicon') %}<link rel="icon" href="/static/{{ s.favicon }}"/>{% endif %}
+<style>
+:root{--primary:{{ s.get('primary_color','#0a2540') }};--secondary:{{ s.get('secondary_color','#1a73e8') }};--accent:{{ s.get('accent_color','#00d4ff') }};}
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),#1a3a5c);padding:20px}
+.auth-card{background:var(--card-bg,#fff);border-radius:20px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo-text{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--primary)}
+.auth-logo-text span{color:var(--accent)}
+.auth-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--text,#1a1a2e);text-align:center;margin-bottom:8px}
+.auth-sub{color:var(--text-muted,#6b7280);text-align:center;font-size:.9rem;margin-bottom:32px}
+.auth-label{display:block;font-size:.82rem;font-weight:600;color:var(--text,#1a1a2e);margin-bottom:6px}
+.auth-input{width:100%;padding:13px 16px 13px 44px;background:var(--bg2,#f8faff);border:1.5px solid var(--border,rgba(0,0,0,.08));border-radius:10px;color:var(--text,#1a1a2e);font-size:.95rem;outline:none;transition:border-color .2s;box-sizing:border-box}
+.auth-input:focus{border-color:var(--secondary)}
+.input-wrap{position:relative;margin-bottom:20px}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted,#6b7280);font-size:.9rem}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));color:#fff;border:none;border-radius:99px;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;margin-top:8px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,115,232,.4)}
+.auth-error{background:rgba(239,68,68,.1);color:#ef4444;padding:12px;border-radius:10px;font-size:.875rem;text-align:center;margin-bottom:16px}
+.auth-footer{text-align:center;margin-top:24px;font-size:.875rem;color:var(--text-muted,#6b7280)}
+.auth-footer a{color:var(--secondary);font-weight:600}
+</style></head><body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo"><div class="auth-logo-text">{{ s.get('name','H').split()[0][0] }}<span>.</span>{{ s.get('name','K').split()[-1] }}</div></div>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-sub">Sign in to your account</p>
+    {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+    {% if request.args.get('registered') %}<div style="background:rgba(16,185,129,.1);color:#10b981;padding:12px;border-radius:10px;font-size:.875rem;text-align:center;margin-bottom:16px">✓ Account created! Please sign in.</div>{% endif %}
+    <form method="POST">
+      <label class="auth-label">Email Address</label>
+      <div class="input-wrap"><i class="fas fa-envelope input-icon"></i><input type="email" name="email" class="auth-input" placeholder="john@example.com" required/></div>
+      <label class="auth-label">Password</label>
+      <div class="input-wrap"><i class="fas fa-lock input-icon"></i><input type="password" name="password" class="auth-input" placeholder="••••••••" required/></div>
+      <button type="submit" class="auth-btn"><i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Sign In</button>
+    </form>
+    {% if s.get('users_can_register','0')=='1' %}
+    <div class="auth-footer">Don't have an account? <a href="/register">Sign up</a></div>
+    {% endif %}
+    <div class="auth-footer" style="margin-top:12px"><a href="/"><i class="fas fa-arrow-left" style="margin-right:4px"></i>Back to Portfolio</a></div>
+  </div>
+</div>
+</body></html>
