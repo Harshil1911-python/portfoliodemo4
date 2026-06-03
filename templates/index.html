@@ -198,7 +198,7 @@
       </div>
       <p class="about-text">{{ s.get('about_text', s.get('bio','')) }}</p>
       <div class="about-info-grid">
-        <div class="about-info-item"><span class="about-info-label">Name</span><span class="about-info-value">{{ s.get('name','') }}</span></div>
+        <div class="about-info-item"><span class="about-info-label">Name</span><span class="about-info-value">{{ s.get('site_name', s.get('name', s.get('footer_name', ''))) }}</span></div>
         <div class="about-info-item"><span class="about-info-label">Email</span><span class="about-info-value">{{ s.get('email','') }}</span></div>
         <div class="about-info-item"><span class="about-info-label">Phone</span><span class="about-info-value">{{ s.get('phone','') }}</span></div>
         <div class="about-info-item"><span class="about-info-label">Location</span><span class="about-info-value">{{ s.get('location','') }}</span></div>
